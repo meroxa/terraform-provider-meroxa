@@ -53,6 +53,7 @@ func Provider() *schema.Provider {
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"meroxa_resource_types": dataSourceResourceTypes(),
+			"meroxa_resource":       dataSourceResource(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}
