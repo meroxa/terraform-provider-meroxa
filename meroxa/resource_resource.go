@@ -146,7 +146,7 @@ func resourceResourceCreate(ctx context.Context, d *schema.ResourceData, m inter
 		input.Credentials = expandCredentials(v.([]interface{}))
 	}
 
-	if v, ok := d.GetOk("metadata"); ok && v != "" {
+	if v, ok := d.GetOk("metadata"); ok && v.(string) != "" {
 		err := json.Unmarshal([]byte(v.(string)), &input.Metadata)
 		if err != nil {
 			return diag.FromErr(err) //may need to add better information here
