@@ -35,7 +35,7 @@ func dataSourceResource() *schema.Resource {
 				Sensitive:   false, //if we contain secrets
 			},
 			"metadata": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeMap,
 				Optional: true,
 				Computed: true,
 			},
