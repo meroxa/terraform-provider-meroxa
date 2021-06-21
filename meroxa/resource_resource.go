@@ -2,7 +2,6 @@ package meroxa
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/hashicorp/go-cty/cty"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -41,8 +40,9 @@ func resourceResource() *schema.Resource {
 				Sensitive:        false,         //if we contain secrets
 			},
 			"metadata": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeMap,
 				Optional: true,
+				Elem:     schema.TypeString,
 			},
 			"ssh_tunnel": &schema.Schema{
 				Type:     schema.TypeList,
@@ -146,11 +146,8 @@ func resourceResourceCreate(ctx context.Context, d *schema.ResourceData, m inter
 		input.Credentials = expandCredentials(v.([]interface{}))
 	}
 
-	if v, ok := d.GetOk("metadata"); ok && v.(string) != "" {
-		err := json.Unmarshal([]byte(v.(string)), &input.Metadata)
-		if err != nil {
-			return diag.FromErr(err) //may need to add better information here
-		}
+	if v, ok := d.GetOk("metadata"); ok {
+		input.Metadata = v.(map[string]interface{})
 	}
 
 	if v, ok := d.GetOk("ssh_tunnel"); ok {
@@ -199,7 +196,7 @@ func resourceResourceRead(ctx context.Context, d *schema.ResourceData, m interfa
 		return diag.FromErr(err)
 	}
 
-	d.Set("id", r.ID)
+	d.Set("id", rID)
 	d.Set("name", r.Name)
 	d.Set("type", r.Type)
 	d.Set("url", r.URL)
@@ -208,10 +205,11 @@ func resourceResourceRead(ctx context.Context, d *schema.ResourceData, m interfa
 	d.Set("created_at", r.CreatedAt.String())
 	d.Set("updated_at", r.UpdatedAt.String())
 
-	err = d.Set("credentials", flattenCredentials(r.Credentials))
-	if err != nil {
-		return diag.FromErr(fmt.Errorf("error setting credentials: %s", err))
-	}
+	// todo fixes
+	//err = d.Set("credentials", flattenCredentials(r.Credentials))
+	//if err != nil {
+	//	return diag.FromErr(fmt.Errorf("error setting credentials: %s", err))
+	//}
 
 	err = d.Set("ssh_tunnel", flattenSSHTunnel(r.SSHTunnel))
 	if err != nil {
@@ -237,10 +235,11 @@ func resourceResourceUpdate(ctx context.Context, d *schema.ResourceData, m inter
 		URL:  d.Get("url").(string),
 	}
 	if d.HasChange("metadata") {
-		err := json.Unmarshal([]byte(d.Get("metadata").(string)), &req.Metadata)
-		if err != nil {
-			return diag.FromErr(err)
-		}
+		req.Metadata = d.Get("metadata").(map[string]interface{})
+		//err := json.Unmarshal([]byte(d.Get("metadata").(string)), &req.Metadata)
+		//if err != nil {
+		//	return diag.FromErr(err)
+		//}
 	}
 
 	if d.HasChange("credentials") {
