@@ -51,14 +51,6 @@ func resourceConnection() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			//"input": {
-			//	Type:        schema.TypeList,
-			//	Required:    true,
-			//	Description: "comma delimited list of input streams",
-			//	Elem: &schema.Schema{
-			//		Type: schema.TypeString,
-			//	},
-			//},
 			"config": {
 				Type:        schema.TypeMap,
 				Description: "connector configuration",
@@ -68,16 +60,19 @@ func resourceConnection() *schema.Resource {
 			"metadata": {
 				Type:     schema.TypeMap,
 				Optional: true,
+				Computed: true,
 				Elem:     schema.TypeString,
 			},
 			"pipeline_id": &schema.Schema{
 				Type:        schema.TypeInt,
 				Description: "pipeline id to attach connector to",
 				Optional:    true,
+				Computed:    true,
 			},
 			"pipeline_name": &schema.Schema{
 				Type:        schema.TypeString,
 				Description: "pipeline name connector is attach to",
+				Optional:    true,
 				Computed:    true,
 			},
 			"source_id": &schema.Schema{ // todo fix state in API
@@ -149,11 +144,6 @@ func resourceConnectionCreate(ctx context.Context, d *schema.ResourceData, m int
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	diags = append(diags, diag.Diagnostic{
-		Severity: diag.Warning,
-		Summary:  "connection connection",
-		Detail:   fmt.Sprintf("%+v\n", conn),
-	})
 
 	d.SetId(strconv.Itoa(conn.ID))
 	resourceConnectionRead(ctx, d, m)

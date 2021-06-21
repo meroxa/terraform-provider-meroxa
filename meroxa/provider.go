@@ -53,7 +53,7 @@ func Provider() *schema.Provider {
 			"meroxa_resource":   resourceResource(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
-
+			"meroxa_connection":     dataSourceConnection(),
 			"meroxa_resource_types": dataSourceResourceTypes(),
 			"meroxa_resource":       dataSourceResource(),
 		},
