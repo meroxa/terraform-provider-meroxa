@@ -9,12 +9,12 @@ import (
 	"strconv"
 )
 
-func resourceConnection() *schema.Resource {
+func resourceConnector() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceConnectionCreate,
-		ReadContext:   resourceConnectionRead,
-		UpdateContext: resourceConnectionUpdate,
-		DeleteContext: resourceConnectionDelete,
+		CreateContext: resourceConnectorCreate,
+		ReadContext:   resourceConnectorRead,
+		UpdateContext: resourceConnectorUpdate,
+		DeleteContext: resourceConnectorDelete,
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
@@ -50,6 +50,7 @@ func resourceConnection() *schema.Resource {
 			"state": {
 				Type:     schema.TypeString,
 				Computed: true,
+				Optional: true,
 			},
 			"config": {
 				Type:        schema.TypeMap,
@@ -97,7 +98,7 @@ func resourceConnection() *schema.Resource {
 	}
 }
 
-func resourceConnectionCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceConnectorCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 	var resourceID int
@@ -146,12 +147,12 @@ func resourceConnectionCreate(ctx context.Context, d *schema.ResourceData, m int
 	}
 
 	d.SetId(strconv.Itoa(conn.ID))
-	resourceConnectionRead(ctx, d, m)
+	resourceConnectorRead(ctx, d, m)
 
 	return diags
 }
 
-func resourceConnectionRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceConnectorRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
@@ -184,17 +185,41 @@ func resourceConnectionRead(ctx context.Context, d *schema.ResourceData, m inter
 	return diags
 }
 
-func resourceConnectionUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceConnectorUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
+	var state string
+	c := m.(*meroxa.Client)
+
+	name := d.Get("name").(string)
+	if d.HasChange("state") {
+		state = d.Get("state").(string)
+		_, err := c.UpdateConnectorStatus(ctx, name, state)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
+	resourceResourceRead(ctx, d, m)
 
 	return diags
 }
 
-func resourceConnectionDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceConnectorDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
+	c := m.(*meroxa.Client)
+	rID := d.Id()
+	id, err := strconv.Atoi(rID)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 
+	err = c.DeleteConnector(ctx, id)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	d.SetId("")
 	return diags
 }
 

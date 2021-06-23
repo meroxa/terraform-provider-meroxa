@@ -49,11 +49,10 @@ func Provider() *schema.Provider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"meroxa_connection": resourceConnection(),
-			"meroxa_resource":   resourceResource(),
+			"meroxa_connector": resourceConnector(),
+			"meroxa_resource":  resourceResource(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
-			"meroxa_connection":     dataSourceConnection(),
 			"meroxa_resource_types": dataSourceResourceTypes(),
 			"meroxa_resource":       dataSourceResource(),
 		},
