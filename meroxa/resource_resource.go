@@ -36,8 +36,20 @@ func resourceResource() *schema.Resource {
 				Type:             schema.TypeString,
 				Required:         true,
 				Description:      "Resource URL",
-				ValidateDiagFunc: validateURL(), // can validate url
-				Sensitive:        false,         //if we contain secrets
+				ValidateDiagFunc: validateURL(),
+				Sensitive:        false,
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					o1 := stripUrlSchema(old)
+					oldBase := stripUrlCreds(o1)
+
+					n1 := stripUrlSchema(new)
+					newBase := stripUrlCreds(n1)
+
+					if oldBase == newBase {
+						return true
+					}
+					return false
+				},
 			},
 			"metadata": {
 				Type:     schema.TypeMap,
@@ -196,7 +208,6 @@ func resourceResourceRead(ctx context.Context, d *schema.ResourceData, m interfa
 		return diag.FromErr(err)
 	}
 
-	d.Set("id", rID)
 	d.Set("name", r.Name)
 	d.Set("type", r.Type)
 	d.Set("url", r.URL)
@@ -375,4 +386,20 @@ func validateURL() schema.SchemaValidateDiagFunc {
 		}
 		return diags
 	}
+}
+
+func stripUrlSchema(url string) string {
+	s := strings.SplitAfter(url, "://")
+	if len(s) < 2 {
+		return ""
+	}
+	return s[1]
+}
+
+func stripUrlCreds(url string) string {
+	s := strings.Split(url, "@")
+	if len(s) == 2 {
+		return s[1]
+	}
+	return s[0]
 }
