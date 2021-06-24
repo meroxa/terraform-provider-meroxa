@@ -13,9 +13,9 @@ import (
 )
 
 const (
-	postgresqlUsername = "postgres"
-	postgresqlPassword = "secret"
-	postgresqlDatabase = "pg-test"
+	postgresqlUsername = "user"
+	postgresqlPassword = "password"
+	postgresqlDatabase = "postgres"
 )
 
 var postgresqlUrl string

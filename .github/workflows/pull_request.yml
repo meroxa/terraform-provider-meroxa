@@ -30,6 +30,23 @@ jobs:
   minikube_acceptance:
     name: Minikube Terraform Acceptance Test
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_USER: user
+        ports:
+          - 5432:5432
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       # Note: the following folder layout matters for platform-dev-setup:
       # parent_dir:
@@ -115,7 +132,7 @@ jobs:
           AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_ACCEPTANCE_CLIENT_SECRET }}
           AUTH0_PASSWORD: ${{ secrets.AUTH0_PASSWORD }}
           AUTH0_USERNAME: ${{ secrets.AUTH0_USERNAME }}
-#          MEROXA_POSTGRES_URL: ${{ secrets.TEST_DB_URL }}
+          MEROXA_POSTGRES_URL: postgres://user:password@localhost:5432/postgres
           TF_ACC: true
         run: |
           echo "Capturing platform-api logs"
