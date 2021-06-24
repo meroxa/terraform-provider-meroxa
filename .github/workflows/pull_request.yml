@@ -1,0 +1,164 @@
+name: Build and Tests
+
+# Run this workflow every time a new PR wants to merge to master/main
+on:
+  pull_request:
+    branches:
+      - spike
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: ^1.16
+      - name: Build
+        run: make build
+#  vet:
+#    name: Vet
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v2
+#      - name: Vet
+#        run: make vet
+  curl_access:
+    name: curl access
+    runs-on: ubuntu-latest
+    steps:
+      - name: curl
+        env:
+          AUTH0_CLIENT_ID: ${{ secrets.AUTH0_ACCEPTANCE_CLIENT_ID }}
+          AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN }}
+          AUTH0_AUDIENCE: ${{ secrets.AUTH0_AUDIENCE }}
+          AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_ACCEPTANCE_CLIENT_SECRET }}
+          AUTH0_PASSWORD: ${{ secrets.AUTH0_PASSWORD }}
+          AUTH0_USERNAME: ${{ secrets.AUTH0_USERNAME }}
+        run: |
+          curl --request POST \
+            --url 'https://${AUTH0_DOMAIN}.auth0.com/oauth/token' \
+            --header 'content-type: application/x-www-form-urlencoded' \
+            --data grant_type=password \
+            --data username=${AUTH0_USERNAME} \
+            --data password=${AUTH0_PASSWORD} \
+            --data audience=${AUTH0_AUDIENCE} \
+            --data scope=user \
+            --data 'client_id=${AUTH0_CLIENT_ID}' \
+            --data client_secret=${AUTH0_CLIENT_SECRET}
+  minikube_acceptance:
+    name: Minikube Terraform Acceptance Test
+    runs-on: ubuntu-latest
+    needs: [curl_access]
+    steps:
+      # Note: the following folder layout matters for platform-dev-setup:
+      # parent_dir:
+      #   - meroxa
+      #   - merman
+      #   - logan
+      #   - platform-dev-setup
+      - name: Checkout Platform API
+        uses: actions/checkout@v2
+        with:
+          path: meroxa
+      - name: Checkout Merman
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.MEROXA_MACHINE }}
+          repository: meroxa/merman
+          path: merman
+      - name: Checkout Logan
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.MEROXA_MACHINE }}
+          repository: meroxa/logan
+          path: logan
+      - name: Checkout platform-dev-setup
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.MEROXA_MACHINE }}
+          repository: meroxa/platform-dev-setup
+          path: platform-dev-setup
+
+      # Download minikube
+      - name: Download minikube
+        run: |
+          curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+          sudo install minikube-linux-amd64 /usr/local/bin/minikube
+          echo "MINIKUBE_VERSION=$(minikube version -o json | jq -r '.minikubeVersion')" >> $GITHUB_ENV
+      - name: Cache minikube images
+        uses: actions/cache@v2
+        with:
+          path: /home/runner/.minikube/cache
+          key: minikube-cache-${{ runner.os }}-${{ env.MINIKUBE_VERSION }}
+
+      - uses: actions/setup-go@v2
+        with:
+          go-version: ^1.16
+
+      # Set up control plane & data plane
+      # This should already push the current API code to minikube
+      - name: Setup control plane & data plane
+        working-directory: ./platform-dev-setup
+        env:
+          TF_VAR_stripe_publishable_key: ${{ secrets.STAGING_STRIPE_PUBLISHABLE_KEY }}
+          TF_VAR_stripe_secret_key: ${{ secrets.STAGING_STRIPE_SECRET_KEY }}
+          TF_VAR_stripe_webhook_secret: ${{ secrets.STAGING_STRIPE_WEBHOOK_SECRET }}
+          TF_VAR_sentry_dsn: ${{ secrets.DEV_SENTRY_DSN }}
+        run: |
+          minikube config set memory 2048
+          minikube config set cpus 2
+          minikube config set disk-size 8GB
+          make
+      # Run acceptance tests
+      - name: Checkout CLI
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.MEROXA_MACHINE }}
+          repository: meroxa/cli
+          path: cli
+      - name: Run acceptance tests
+        working-directory: ./acceptance
+        env:
+          AUTH0_CLIENT_ID: ${{ secrets.AUTH0_ACCEPTANCE_CLIENT_ID }}
+          AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN }}
+          AUTH0_AUDIENCE: ${{ secrets.AUTH0_AUDIENCE }}
+          AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_ACCEPTANCE_CLIENT_SECRET }}
+          AUTH0_PASSWORD: ${{ secrets.AUTH0_PASSWORD }}
+          AUTH0_USERNAME: ${{ secrets.AUTH0_USERNAME }}
+        run: |
+          echo "Capturing platform-api logs"
+          kubectl logs -n meroxa-api -l "app.kubernetes.io/name=meroxa-api" -f -c api --cluster meroxa-control-plane > platform-api.log 2>&1 &
+          kubectl logs -n meroxa-api -l "app.kubernetes.io/name=meroxa-api" -f -c worker --cluster meroxa-control-plane > platform-api-worker.log 2>&1 &
+          kubectl logs -n merman -l "app.kubernetes.io/name=merman" -f --cluster meroxa-control-plane > merman.log 2>&1 &
+          kubectl logs -n catalyst-system -l "app.kubernetes.io/name=catalyst" -f --cluster meroxa-data-plane > catalyst.log 2>&1 &
+          # FIXME: the test PG in the data plane can't be accessed from the control plane with the minikube Docker driver
+          # Using a public accessible RDS for now
+          MEROXA_API_URL="$(minikube service -n meroxa-nginx meroxa-nginx-ingress-nginx-controller --url --profile meroxa-control-plane | head -n 1)"
+          MEROXA_ACCESS_TOKEN=$(curl --request POST \
+            --url 'https://${AUTH0_DOMAIN}.auth0.com/oauth/token' \
+            --header 'content-type: application/x-www-form-urlencoded' \
+            --data grant_type=password \
+            --data username=${AUTH0_USERNAME} \
+            --data password=${AUTH0_PASSWORD} \
+            --data audience=${AUTH0_AUDIENCE} \
+            --data scope=user \
+            --data 'client_id=${AUTH0_CLIENT_ID}' \
+            --data client_secret=${AUTH0_CLIENT_SECRET})
+          echo $MEROXA_ACCESS_TOKEN
+
+
+
+
+#          if [ $retVal -ne 0 ]; then
+#            echo "Debugging with platform-api logs"
+#            cat platform-api.log
+#            echo "Debugging with platform-api-worker logs"
+#            cat platform-api-worker.log
+#            echo "Debugging with merman logs"
+#            cat merman.log
+#            echo "Debugging with catalyst logs"
+#            cat catalyst.log
+#          fi
+#          exit $retVal
