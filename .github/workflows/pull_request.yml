@@ -45,6 +45,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           token: ${{ secrets.MEROXA_MACHINE }}
+          repository: meroxa/platform-api
           path: meroxa
       - name: Checkout Merman
         uses: actions/checkout@v2
