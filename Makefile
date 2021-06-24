@@ -1,10 +1,9 @@
-TEST?=$$(go list ./... | grep -v 'vendor')
 HOSTNAME=meroxa.io
 NAMESPACE=dev
 NAME=meroxa
 BINARY=terraform-provider-${NAME}
 VERSION=0.1
-OS_ARCH=darwin_amd64
+OS_ARCH=linux_amd64
 
 default: install
 
@@ -38,5 +37,12 @@ test:
 	go test -i $(TEST) || exit 1
 	echo $(TEST) | xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4
 
+# Run acceptance tests
+.PHONY: testacc
 testacc:
-	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m
+	TF_ACC=1 go test ./... -v $(TESTARGS) -timeout 120m
+
+
+.PHONY: vet
+vet:
+	docker run --rm -v $(CURDIR):/meroxa -w /meroxa golangci/golangci-lint:latest golangci-lint run --timeout 5m -v
