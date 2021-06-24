@@ -39,17 +39,18 @@ jobs:
           AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_ACCEPTANCE_CLIENT_SECRET }}
           AUTH0_PASSWORD: ${{ secrets.AUTH0_PASSWORD }}
           AUTH0_USERNAME: ${{ secrets.AUTH0_USERNAME }}
-        run: |
-          curl --request POST \
-            --url 'https://'"$AUTH0_DOMAIN"'.auth0.com/oauth/token' \
-            --header 'content-type: application/x-www-form-urlencoded' \
-            --data grant_type=password \
-            --data username=$AUTH0_USERNAME \
-            --data password=$AUTH0_PASSWORD \
-            --data audience=$AUTH0_AUDIENCE \
-            --data scope=user \
-            --data 'client_id='"$AUTH0_CLIENT_ID"'' \
-            --data client_secret=$AUTH0_CLIENT_SECRET
+        uses: mxschmitt/action-tmate@v3
+#        run: |
+#          curl --request POST \
+#            --url 'https://'"$AUTH0_DOMAIN"'.auth0.com/oauth/token' \
+#            --header 'content-type: application/x-www-form-urlencoded' \
+#            --data grant_type=password \
+#            --data username=$AUTH0_USERNAME \
+#            --data password=$AUTH0_PASSWORD \
+#            --data audience=$AUTH0_AUDIENCE \
+#            --data scope=user \
+#            --data 'client_id='"$AUTH0_CLIENT_ID"'' \
+#            --data client_secret=$AUTH0_CLIENT_SECRET
   minikube_acceptance:
     name: Minikube Terraform Acceptance Test
     runs-on: ubuntu-latest
