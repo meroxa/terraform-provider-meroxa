@@ -251,10 +251,6 @@ func resourceResourceUpdate(ctx context.Context, d *schema.ResourceData, m inter
 	}
 	if d.HasChange("metadata") {
 		req.Metadata = d.Get("metadata").(map[string]interface{})
-		//err := json.Unmarshal([]byte(d.Get("metadata").(string)), &req.Metadata)
-		//if err != nil {
-		//	return diag.FromErr(err)
-		//}
 	}
 
 	if d.HasChange("credentials") {
@@ -266,7 +262,7 @@ func resourceResourceUpdate(ctx context.Context, d *schema.ResourceData, m inter
 	log.Printf("[DEBUG] Updating meroxa resource: %v", req)
 	_, err := c.UpdateResource(ctx, req.Name, req)
 	if err != nil {
-		return diag.FromErr(fmt.Errorf("error updating API Gateway v2 integration: %s", err))
+		return diag.FromErr(err)
 	}
 	resourceResourceRead(ctx, d, m)
 	return diags

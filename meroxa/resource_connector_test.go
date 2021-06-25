@@ -68,6 +68,5 @@ func testAccCheckMeroxaConnectorDestroy(s *terraform.State) error {
 			return fmt.Errorf("connector still exists")
 		}
 	}
-
 	return nil
 }
