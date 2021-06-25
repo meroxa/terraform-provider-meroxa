@@ -118,6 +118,9 @@ jobs:
           TF_VAR_sentry_dsn: ${{ secrets.DEV_SENTRY_DSN }}
         run: |
           make
+          kubectl describe pod -l "app.kubernetes.io/name=meroxa-api" -n meroxa-api
+          kubectl describe deployment -l "app.kubernetes.io/name=meroxa-api" -n meroxa-api
+          kubectl logs -n meroxa-api -l "app.kubernetes.io/name=meroxa-api" -c api --cluster meroxa-control-plane
       # Run acceptance tests
       - name: Run Terraform Provider Acceptance tests
         working-directory: ./provider
