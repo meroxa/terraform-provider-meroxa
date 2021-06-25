@@ -39,13 +39,17 @@ func resourceResource() *schema.Resource {
 				ValidateDiagFunc: validateURL(),
 				Sensitive:        false,
 				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-					o1 := stripUrlSchema(old)
-					oldBase := stripUrlCreds(o1)
+					// parse old value
+					oDriver, oRest := splitUrlSchema(old)
+					_, oBase := splitUrlCreds(oRest)
+					oClean := strings.Join([]string{oDriver, oBase}, "")
 
-					n1 := stripUrlSchema(new)
-					newBase := stripUrlCreds(n1)
+					// parse new value
+					nDriver, nRest := splitUrlSchema(new)
+					_, nBase := splitUrlCreds(nRest)
+					nClean := strings.Join([]string{nDriver, nBase}, "")
 
-					if oldBase == newBase {
+					if oClean == nClean {
 						return true
 					}
 					return false
@@ -375,6 +379,7 @@ func validateURL() schema.SchemaValidateDiagFunc {
 				Summary:  "URL missing Schema",
 				Detail:   "Please add correct URL Schema",
 			})
+			return diags
 		}
 		rest := strings.Split(s[1], "@")
 		if len(rest) == 2 {
@@ -388,18 +393,19 @@ func validateURL() schema.SchemaValidateDiagFunc {
 	}
 }
 
-func stripUrlSchema(url string) string {
+func splitUrlSchema(url string) (string, string) {
 	s := strings.SplitAfter(url, "://")
-	if len(s) < 2 {
-		return ""
+	if len(s) == 2 {
+		return s[0], s[1]
 	}
-	return s[1]
+	return "", s[0]
+
 }
 
-func stripUrlCreds(url string) string {
+func splitUrlCreds(url string) (string, string) {
 	s := strings.Split(url, "@")
 	if len(s) == 2 {
-		return s[1]
+		return s[0], s[1]
 	}
-	return s[0]
+	return "", s[0]
 }
