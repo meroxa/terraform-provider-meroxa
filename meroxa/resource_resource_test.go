@@ -6,6 +6,7 @@ import (
 	"github.com/meroxa/meroxa-go"
 	"os"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -15,17 +16,28 @@ import (
 const (
 	postgresqlUsername = "user"
 	postgresqlPassword = "password"
-	postgresqlDatabase = "postgres"
 )
 
 var postgresqlUrl string
 
 func init() {
-	s := stripUrlSchema(os.Getenv("MEROXA_POSTGRES_URL"))
-	postgresqlUrl = stripUrlSchema(s)
+	driver, rest := splitUrlSchema(os.Getenv("MEROXA_POSTGRES_URL"))
+	_, base := splitUrlCreds(rest)
+	postgresqlUrl = strings.Join([]string{driver, base}, "")
 }
 
 func TestAccMeroxaResource_basic(t *testing.T) {
+	testAccMeroxaResourceBasic := fmt.Sprintf(`
+	resource "meroxa_resource" "basic" {
+	  name = "basic"
+	  type = "postgres"
+	  url = "%s"
+	  credentials {
+		username = "%s"
+		password = "%s"
+	  }
+	}
+	`, postgresqlUrl, postgresqlUsername, postgresqlPassword)
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
@@ -45,6 +57,13 @@ func TestAccMeroxaResource_basic(t *testing.T) {
 }
 
 func TestAccMeroxaResource_inline(t *testing.T) {
+	testAccMeroxaResourceInline := fmt.Sprintf(`
+	resource "meroxa_resource" "inline" {
+	  name = "inline"
+	  type = "postgres"
+	  url = "%s"
+	}
+	`, os.Getenv("MEROXA_POSTGRES_URL"))
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
@@ -62,26 +81,6 @@ func TestAccMeroxaResource_inline(t *testing.T) {
 		},
 	})
 }
-
-var testAccMeroxaResourceBasic = fmt.Sprintf(`
-resource "meroxa_resource" "basic" {
-  name = "basic"
-  type = "postgres"
-  url = "%s"
-  credentials {
-    username = "%s"
-    password = "%s"
-  }
-}
-`, postgresqlUrl, postgresqlUsername, postgresqlPassword)
-
-var testAccMeroxaResourceInline = fmt.Sprintf(`
-resource "meroxa_resource" "inline" {
-  name = "inline"
-  type = "postgres"
-  url = "postgres://%s:%s@%s"
-}
-`, postgresqlUsername, postgresqlPassword, postgresqlUrl)
 
 func testAccCheckMeroxaResourceDestroy(s *terraform.State) error {
 	c := testAccProvider.Meta().(*meroxa.Client)
