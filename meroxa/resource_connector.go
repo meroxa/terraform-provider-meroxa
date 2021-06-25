@@ -19,7 +19,12 @@ func resourceConnector() *schema.Resource {
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
-				ForceNew: true, //TODO check if we can change name
+				ForceNew: true,
+			},
+			"input": {
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
 			},
 			"type": {
 				Type:     schema.TypeString,
@@ -50,7 +55,6 @@ func resourceConnector() *schema.Resource {
 			"state": {
 				Type:     schema.TypeString,
 				Computed: true,
-				Optional: true,
 			},
 			"config": {
 				Type:        schema.TypeMap,
@@ -117,6 +121,13 @@ func resourceConnectorCreate(ctx context.Context, d *schema.ResourceData, m inte
 		input.Configuration = v.(map[string]interface{})
 	}
 
+	if v, ok := d.GetOk("input"); ok {
+		if input.Configuration == nil {
+			input.Configuration = make(map[string]interface{})
+		}
+		input.Configuration["input"] = v.(string)
+	}
+
 	if v, ok := d.GetOk("metadata"); ok {
 		input.Metadata = v.(map[string]interface{})
 	} else {
@@ -169,7 +180,6 @@ func resourceConnectorRead(ctx context.Context, d *schema.ResourceData, m interf
 		return diag.FromErr(err)
 	}
 
-	d.Set("id", strconv.Itoa(conn.ID))
 	d.Set("type", conn.Type)
 	d.Set("name", conn.Name)
 	d.Set("config", conn.Configuration)
