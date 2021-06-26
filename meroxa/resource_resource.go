@@ -22,10 +22,7 @@ func resourceResource() *schema.Resource {
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
-				ForceNew: true, //TODO check if we can change name
-				//StateFunc: func(i interface{}) string {
-				//	return strings.ToLower(i.(string)) // TODO: did we address lowercase name?
-				//},
+				ForceNew: true,
 			},
 			"type": {
 				Type:     schema.TypeString,
@@ -245,6 +242,7 @@ func resourceResourceUpdate(ctx context.Context, d *schema.ResourceData, m inter
 	//if err != nil {
 	//	return diag.FromErr(err)
 	//}
+	//todo check connectors
 	req := meroxa.UpdateResourceInput{
 		Name: d.Get("name").(string),
 		URL:  d.Get("url").(string),
