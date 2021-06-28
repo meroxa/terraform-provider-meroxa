@@ -15,14 +15,16 @@ func resourceEndpoint() *schema.Resource {
 		DeleteContext: resourceEndpointDelete,
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:        schema.TypeString,
+				Description: "Endpoint Name",
+				Required:    true,
+				ForceNew:    true,
 			},
 			"protocol": {
-				Type:     schema.TypeString,
-				Optional: true,
-				ForceNew: true,
+				Type:        schema.TypeString,
+				Description: "Protocol. Must be HTTP or GRPC",
+				Optional:    true,
+				ForceNew:    true,
 				ValidateDiagFunc: func(val interface{}, path cty.Path) diag.Diagnostics {
 					var diags diag.Diagnostics
 					protocol := val.(string)
@@ -39,26 +41,31 @@ func resourceEndpoint() *schema.Resource {
 				},
 			},
 			"stream": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:        schema.TypeString,
+				Description: "The Endpoint's stream",
+				Required:    true,
+				ForceNew:    true,
 			},
 			"host": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Description: "The Endpoint's host",
+				Computed:    true,
 			},
 			"ready": {
-				Type:     schema.TypeBool,
-				Computed: true,
+				Type:        schema.TypeBool,
+				Description: "The Endpoint's ready state",
+				Computed:    true,
 			},
 			"basic_auth_username": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Description: "Endpoint's username name credential",
+				Computed:    true,
 			},
 			"basic_auth_password": {
-				Type:      schema.TypeString,
-				Computed:  true,
-				Sensitive: true,
+				Type:        schema.TypeString,
+				Description: "Endpoint's password credential",
+				Computed:    true,
+				Sensitive:   true,
 			},
 		},
 		Importer: &schema.ResourceImporter{

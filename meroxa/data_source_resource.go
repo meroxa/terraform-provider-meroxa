@@ -15,35 +15,40 @@ func dataSourceResource() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:          schema.TypeString,
+				Description:   "Resource ID",
 				Optional:      true,
 				Computed:      true,
 				ConflictsWith: []string{"name"},
 			},
 			"name": {
-				Optional: true,
-				Computed: true,
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
+				Description: "Resource name",
+				Optional:    true,
+				Computed:    true,
 			},
 			"type": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Description: "Resource Type. Must be one of the supported resource types.",
+				Computed:    true,
 			},
 			"url": {
 				Type:        schema.TypeString,
-				Description: "Resource URL",
+				Description: "Resource URL. Warning will be thrown if credentials are placed inline. Using the credentials block is highly encouraged",
 				Computed:    true,
 				Sensitive:   false, //if we contain secrets
 			},
 			"metadata": {
-				Type:     schema.TypeMap,
-				Optional: true,
-				Computed: true,
+				Type:        schema.TypeMap,
+				Description: "Resource metadata",
+				Optional:    true,
+				Computed:    true,
 			},
 			"ssh_tunnel": &schema.Schema{
-				Type:     schema.TypeList,
-				MaxItems: 1,
-				Optional: true,
-				Computed: true,
+				Type:        schema.TypeList,
+				Description: "Resource ssh tunnel configuration",
+				MaxItems:    1,
+				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"address": {
@@ -59,22 +64,26 @@ func dataSourceResource() *schema.Resource {
 				},
 			},
 			"status": &schema.Schema{ // todo fix state in API
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Description: "Resource status",
+				Computed:    true,
 			},
 			"created_at": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Description: "Resource Created at timestamp",
+				Computed:    true,
 			},
 			"updated_at": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Description: "Resource Updated at timestamp",
+				Computed:    true,
 			},
 			"credentials": &schema.Schema{
-				Type:     schema.TypeList,
-				MaxItems: 1,
-				Optional: true,
-				Computed: true,
+				Type:        schema.TypeList,
+				Description: "Resource credentials configuration",
+				MaxItems:    1,
+				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"username": {

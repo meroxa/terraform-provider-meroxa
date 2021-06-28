@@ -17,22 +17,26 @@ func resourceConnector() *schema.Resource {
 		DeleteContext: resourceConnectorDelete,
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				ForceNew:    true,
+				Description: "Connector Name",
 			},
 			"input": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				ForceNew:    true,
+				Description: "Input stream",
 			},
 			"type": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Connector Type",
 			},
 			"streams": {
-				Type:     schema.TypeList,
-				Computed: true,
+				Type:        schema.TypeList,
+				Computed:    true,
+				Description: "Connector Streams",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"dynamic": {
@@ -53,52 +57,50 @@ func resourceConnector() *schema.Resource {
 				},
 			},
 			"state": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Connector state",
 			},
 			"config": {
 				Type:        schema.TypeMap,
-				Description: "connector configuration",
+				Description: "Connector configuration",
 				Optional:    true,
 				Elem:        schema.TypeString,
 			},
 			"metadata": {
-				Type:     schema.TypeMap,
-				Optional: true,
-				Computed: true,
-				Elem:     schema.TypeString,
+				Type:        schema.TypeMap,
+				Description: "Connector metadata",
+				Optional:    true,
+				Computed:    true,
+				Elem:        schema.TypeString,
 			},
 			"pipeline_id": &schema.Schema{
 				Type:        schema.TypeInt,
-				Description: "pipeline id to attach connector to",
+				Description: "Connector's Pipeline ID, uses default pipeline if not specified",
 				Optional:    true,
 				Computed:    true,
 			},
 			"pipeline_name": &schema.Schema{
 				Type:        schema.TypeString,
-				Description: "pipeline name connector is attach to",
+				Description: "Connector's Pipeline Name, uses default pipeline if not specified",
 				Optional:    true,
 				Computed:    true,
 			},
-			"source_id": &schema.Schema{ // todo fix state in API
+			"source_id": &schema.Schema{
 				Type:          schema.TypeString,
-				Description:   "resource id to use as source",
+				Description:   "The resource ID for a source connector",
 				Optional:      true,
 				ConflictsWith: []string{"destination_id"},
 			},
-			"destination_id": &schema.Schema{ // todo fix state in API
+			"destination_id": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "resource id to use as destination",
+				Description: "The resource ID for a destination connector",
 			},
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
-		//Timeouts: &schema.ResourceTimeout{
-		//	Create: schema.DefaultTimeout(30 * time.Second),
-		//	Update: schema.DefaultTimeout(30 * time.Second),
-		//},
 	}
 }
 

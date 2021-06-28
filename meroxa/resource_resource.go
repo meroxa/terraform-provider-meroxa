@@ -20,19 +20,21 @@ func resourceResource() *schema.Resource {
 		DeleteContext: resourceResourceDelete,
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:        schema.TypeString,
+				Description: "Resource name",
+				Required:    true,
+				ForceNew:    true,
 			},
 			"type": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:        schema.TypeString,
+				Description: "Resource Type. Must be one of the supported resource types.",
+				Required:    true,
+				ForceNew:    true,
 			},
 			"url": {
 				Type:             schema.TypeString,
 				Required:         true,
-				Description:      "Resource URL",
+				Description:      "Resource URL. Warning will be thrown if credentials are placed inline. Using the credentials block is highly encouraged",
 				ValidateDiagFunc: validateURL(),
 				Sensitive:        false,
 				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
@@ -53,43 +55,51 @@ func resourceResource() *schema.Resource {
 				},
 			},
 			"metadata": {
-				Type:     schema.TypeMap,
-				Optional: true,
-				Elem:     schema.TypeString,
+				Type:        schema.TypeMap,
+				Description: "Resource metadata",
+				Optional:    true,
+				Elem:        schema.TypeString,
 			},
 			"ssh_tunnel": &schema.Schema{
-				Type:     schema.TypeList,
-				MaxItems: 1,
-				Optional: true,
+				Type:        schema.TypeList,
+				Description: "Resource ssh tunnel configuration",
+				MaxItems:    1,
+				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"address": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Description: "Bastion host address",
+							Optional:    true,
 						},
 						"public_key": {
-							Type:     schema.TypeString,
-							Computed: true,
+							Type:        schema.TypeString,
+							Description: "SSH public Key",
+							Computed:    true,
 						},
 					},
 				},
 			},
 			"status": &schema.Schema{ // todo fix state in API
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Description: "Resource status",
+				Computed:    true,
 			},
 			"created_at": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Description: "Resource Created at timestamp",
+				Computed:    true,
 			},
 			"updated_at": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Description: "Resource Updated at timestamp",
+				Computed:    true,
 			},
 			"credentials": &schema.Schema{
-				Type:     schema.TypeList,
-				MaxItems: 1,
-				Optional: true,
+				Type:        schema.TypeList,
+				Description: "Resource credentials configuration",
+				MaxItems:    1,
+				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"username": {
@@ -137,10 +147,6 @@ func resourceResource() *schema.Resource {
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
-		//Timeouts: &schema.ResourceTimeout{
-		//	Create: schema.DefaultTimeout(30 * time.Second),
-		//	Update: schema.DefaultTimeout(30 * time.Second),
-		//},
 	}
 }
 

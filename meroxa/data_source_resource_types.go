@@ -15,8 +15,9 @@ func dataSourceResourceTypes() *schema.Resource {
 		ReadContext: dataSourceResourceTypesRead,
 		Schema: map[string]*schema.Schema{
 			"resource_types": &schema.Schema{
-				Type:     schema.TypeList,
-				Computed: true,
+				Type:        schema.TypeList,
+				Description: "List of support resource types",
+				Computed:    true,
 				Elem: &schema.Schema{
 					Type:        schema.TypeString,
 					Description: "Meroxa Resource Types",

@@ -16,19 +16,22 @@ func resourcePipeline() *schema.Resource {
 		DeleteContext: resourcePipelineDelete,
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:        schema.TypeString,
+				Description: "The pipeline's name",
+				Required:    true,
+				ForceNew:    true,
 			},
 			"state": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Description: "The pipeline's state",
+				Computed:    true,
 			},
 			"metadata": {
-				Type:     schema.TypeMap,
-				Optional: true,
-				Computed: true,
-				Elem:     schema.TypeString,
+				Type:        schema.TypeMap,
+				Description: "The pipeline's metadata",
+				Optional:    true,
+				Computed:    true,
+				Elem:        schema.TypeString,
 			},
 		},
 		Importer: &schema.ResourceImporter{
