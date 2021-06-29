@@ -11,7 +11,7 @@ import (
 
 func dataSourceConnector() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: dataSourceResourceRead,
+		ReadContext: dataSourceConnectorRead,
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:          schema.TypeString,

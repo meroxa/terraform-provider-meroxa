@@ -10,7 +10,7 @@ import (
 
 func dataSourcePipeline() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: dataSourceResourceRead,
+		ReadContext: dataSourcePipelineRead,
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,

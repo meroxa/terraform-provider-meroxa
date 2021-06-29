@@ -73,6 +73,7 @@ func Provider(version string) func() *schema.Provider {
 			},
 			DataSourcesMap: map[string]*schema.Resource{
 				"meroxa_connector":      dataSourceConnector(),
+				"meroxa_endpoint":       dataSourceEndpoint(),
 				"meroxa_pipeline":       dataSourcePipeline(),
 				"meroxa_resource_types": dataSourceResourceTypes(),
 				"meroxa_resource":       dataSourceResource(),
@@ -130,49 +131,3 @@ func configure(version string, p *schema.Provider) func(context.Context, *schema
 		return c, diags
 	}
 }
-
-//func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
-//	accessToken := d.Get("access_token").(string)
-//	refreshToken := d.Get("refresh_token").(string)
-//
-//	// Warning or errors can be collected in a slice type
-//	var diags diag.Diagnostics
-//
-//	options := []meroxa.Option{
-//		//meroxa.WithUserAgent(fmt.Sprintf("Meroxa Terraform Provider %s", Version)),
-//	}
-//	debug := d.Get("debug")
-//	if debug != "" {
-//		options = append(options, meroxa.WithDumpTransport(os.Stdout))
-//	}
-//
-//	timeoutInt := d.Get("timeout")
-//
-//	if timeoutInt != "" {
-//		timeout := int64(timeoutInt.(int))
-//		options = append(options, meroxa.WithClientTimeout(time.Second*time.Duration(timeout)))
-//	}
-//
-//	apiURL := d.Get("api_url")
-//	if apiURL != "" {
-//		options = append(options, meroxa.WithBaseURL(apiURL.(string)))
-//	}
-//
-//	// WithAuthentication needs to be added after WithDumpTransport
-//	// to catch requests to auth0
-//	options = append(options, meroxa.WithAuthentication(
-//		&oauth2.Config{
-//			//ClientID: clientID,
-//			Endpoint: meroxa.OAuth2Endpoint,
-//		},
-//		accessToken,
-//		refreshToken,
-//	))
-//
-//	c, err := meroxa.New(options...)
-//	if err != nil {
-//		return nil, diag.FromErr(err)
-//	}
-//
-//	return c, diags
-//}
