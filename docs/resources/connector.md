@@ -1,6 +1,7 @@
 ---
 layout: 'meroxa'
 page_title: "Resource: meroxa_connector"
+sidebar_current: "docs-meroxa-meroxa_connector"
 subcategory: ""
 description: |-
   

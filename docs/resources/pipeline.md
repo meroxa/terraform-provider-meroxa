@@ -1,6 +1,7 @@
 ---
 layout: 'meroxa'
 page_title: "Resource: meroxa_pipeline"
+sidebar_current: "docs-meroxa-meroxa_pipeline"
 subcategory: ""
 description: |-
   
