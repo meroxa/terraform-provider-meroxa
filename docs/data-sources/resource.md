@@ -24,41 +24,35 @@ data "meroxa_resource" "basic" {
 
 - **name** (String) Resource Name - (Required)
 
-### Optional
-
-- **credentials** (Block List, Max: 1) Resource Credentials configuration (see [below for nested schema](#nestedblock--credentials))
-- **metadata** (Map of String) Resource Metadata
-- **ssh_tunnel** (Block List, Max: 1) Resource SSH tunnel configuration (see [below for nested schema](#nestedblock--ssh_tunnel))
-
 ### Read-Only
 
 - **created_at** (String) Resource Created at timestamp
+- **credentials** (List of Object) Resource Credentials configuration (see [below for nested schema](#nestedatt--credentials))
 - **id** (String) Resource ID
+- **metadata** (Map of String) Resource Metadata
+- **ssh_tunnel** (List of Object) Resource SSH tunnel configuration (see [below for nested schema](#nestedatt--ssh_tunnel))
 - **status** (String) Resource Status
 - **type** (String) Resource Type. Must be one of the supported resource types.
 - **updated_at** (String) Resource Updated at timestamp
 - **url** (String) Resource URL. Warning will be thrown if credentials are placed inline. Using the credentials block is highly encouraged
 
-<a id="nestedblock--credentials"></a>
+<a id="nestedatt--credentials"></a>
 ### Nested Schema for `credentials`
-
-Optional:
-
-- **cacert** (String) Resource CACert. Trusted certificates for verifying resource
-- **clientcert** (String) Resource Client Cert. Certificate for authenticating to the resource
-- **clientkey** (String, Sensitive) Resource Client key. private key for authenticating to the resource
-- **password** (String, Sensitive) Resource password
-- **ssl** (Boolean) Resource SSL. Set Resource SSL option
-- **username** (String) Resource username
-
-
-<a id="nestedblock--ssh_tunnel"></a>
-### Nested Schema for `ssh_tunnel`
-
-Optional:
-
-- **address** (String)
 
 Read-Only:
 
+- **cacert** (String)
+- **clientcert** (String)
+- **clientkey** (String)
+- **password** (String)
+- **ssl** (Boolean)
+- **username** (String)
+
+
+<a id="nestedatt--ssh_tunnel"></a>
+### Nested Schema for `ssh_tunnel`
+
+Read-Only:
+
+- **address** (String)
 - **public_key** (String)

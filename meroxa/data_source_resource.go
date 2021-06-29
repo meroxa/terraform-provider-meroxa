@@ -38,14 +38,12 @@ func dataSourceResource() *schema.Resource {
 			"metadata": {
 				Type:        schema.TypeMap,
 				Description: "Resource Metadata",
-				Optional:    true,
 				Computed:    true,
 			},
 			"ssh_tunnel": &schema.Schema{
 				Type:        schema.TypeList,
 				Description: "Resource SSH tunnel configuration",
 				MaxItems:    1,
-				Optional:    true,
 				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -80,13 +78,11 @@ func dataSourceResource() *schema.Resource {
 				Type:        schema.TypeList,
 				Description: "Resource Credentials configuration",
 				MaxItems:    1,
-				Optional:    true,
 				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"username": {
 							Type:         schema.TypeString,
-							Optional:     true,
 							Description:  "Resource username",
 							InputDefault: "",
 							ValidateFunc: nil, // todo add validation
@@ -95,7 +91,6 @@ func dataSourceResource() *schema.Resource {
 						},
 						"password": {
 							Type:         schema.TypeString,
-							Optional:     true,
 							Description:  "Resource password",
 							InputDefault: "",
 							ValidateFunc: nil, // todo add validation
@@ -104,26 +99,22 @@ func dataSourceResource() *schema.Resource {
 						},
 						"cacert": {
 							Type:        schema.TypeString,
-							Optional:    true,
 							Computed:    true,
 							Description: "Resource CACert. Trusted certificates for verifying resource",
 						},
 						"clientcert": {
 							Type:        schema.TypeString,
-							Optional:    true,
 							Computed:    true,
 							Description: "Resource Client Cert. Certificate for authenticating to the resource",
 						},
 						"clientkey": {
 							Type:        schema.TypeString,
-							Optional:    true,
 							Computed:    true,
 							Description: "Resource Client key. private key for authenticating to the resource",
 							Sensitive:   true,
 						},
 						"ssl": {
 							Type:        schema.TypeBool,
-							Optional:    true,
 							Computed:    true,
 							Description: "Resource SSL. Set Resource SSL option",
 						},
@@ -141,16 +132,6 @@ func dataSourceResourceRead(ctx context.Context, d *schema.ResourceData, m inter
 	var diags diag.Diagnostics
 	var r *meroxa.Resource
 	var err error
-	if v, ok := d.GetOk("id"); ok && v.(string) != "" {
-		id, err := strconv.Atoi(v.(string))
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		r, err = c.GetResource(ctx, id)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-	}
 
 	if v, ok := d.GetOk("name"); ok && v.(string) != "" {
 		r, err = c.GetResourceByName(ctx, v.(string))
