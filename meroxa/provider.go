@@ -73,6 +73,7 @@ func Provider(version string) func() *schema.Provider {
 			},
 			DataSourcesMap: map[string]*schema.Resource{
 				"meroxa_connector":      dataSourceConnector(),
+				"meroxa_pipeline":       dataSourcePipeline(),
 				"meroxa_resource_types": dataSourceResourceTypes(),
 				"meroxa_resource":       dataSourceResource(),
 			},

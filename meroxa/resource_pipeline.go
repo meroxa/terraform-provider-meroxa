@@ -17,18 +17,18 @@ func resourcePipeline() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:        schema.TypeString,
-				Description: "The pipeline's name",
+				Description: "Pipeline name",
 				Required:    true,
 				ForceNew:    true,
 			},
 			"state": {
 				Type:        schema.TypeString,
-				Description: "The pipeline's state",
+				Description: "Pipeline state",
 				Computed:    true,
 			},
 			"metadata": {
 				Type:        schema.TypeMap,
-				Description: "The pipeline's metadata",
+				Description: "Pipeline metadata",
 				Optional:    true,
 				Computed:    true,
 				Elem:        schema.TypeString,

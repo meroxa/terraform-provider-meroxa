@@ -22,16 +22,16 @@ resource "meroxa_pipeline" "basic" {
 
 ### Required
 
-- **name** (String) The pipeline's name
+- **name** (String) Pipeline name
 
 ### Optional
 
 - **id** (String) The ID of this resource.
-- **metadata** (Map of String) The pipeline's metadata
+- **metadata** (Map of String) Pipeline metadata
 
 ### Read-Only
 
-- **state** (String) The pipeline's state
+- **state** (String) Pipeline state
 
 ## Import
 Import is supported using the following syntax:
