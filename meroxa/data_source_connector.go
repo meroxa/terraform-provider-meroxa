@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-func dataSourceConnection() *schema.Resource {
+func dataSourceConnector() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: dataSourceResourceRead,
 		Schema: map[string]*schema.Schema{
