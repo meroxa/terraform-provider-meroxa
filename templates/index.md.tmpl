@@ -1,0 +1,30 @@
+---
+layout: ""
+page_title: "Provider: Meroxa"
+description: |-
+  The Meroxa provider provides resources to interact with the Meroxa platform API.
+---
+
+# Meroxa Provider
+
+The Meroxa provider provides resources to interact with the Meroxa platform API.
+
+Get `access_token` and `refresh_token` by loggin into the Meroxa CLI.
+
+Mac
+```bash
+meroxa login
+$(awk '{print "export MEROXA_" $0}' /Users/$USER/Library/ApplicationSupport/meroxa/config.env | xargs)
+```
+
+Linux
+```bash
+meroxa login
+$(awk '{print "export MEROXA_" $0}' ~/meroxa/config.env | xargs)
+```
+
+## Example Usage
+
+{{tffile "examples/provider/provider.tf"}}
+
+{{ .SchemaMarkdown | trimspace }}

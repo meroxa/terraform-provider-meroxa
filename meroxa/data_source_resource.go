@@ -14,16 +14,14 @@ func dataSourceResource() *schema.Resource {
 		ReadContext: dataSourceResourceRead,
 		Schema: map[string]*schema.Schema{
 			"id": {
-				Type:          schema.TypeString,
-				Description:   "Resource ID",
-				Optional:      true,
-				Computed:      true,
-				ConflictsWith: []string{"name"},
+				Type:        schema.TypeString,
+				Description: "Resource ID",
+				Computed:    true,
 			},
 			"name": {
 				Type:        schema.TypeString,
-				Description: "Resource name",
-				Optional:    true,
+				Description: "Resource Name - (Required)",
+				Required:    true,
 				Computed:    true,
 			},
 			"type": {
@@ -39,13 +37,13 @@ func dataSourceResource() *schema.Resource {
 			},
 			"metadata": {
 				Type:        schema.TypeMap,
-				Description: "Resource metadata",
+				Description: "Resource Metadata",
 				Optional:    true,
 				Computed:    true,
 			},
 			"ssh_tunnel": &schema.Schema{
 				Type:        schema.TypeList,
-				Description: "Resource ssh tunnel configuration",
+				Description: "Resource SSH tunnel configuration",
 				MaxItems:    1,
 				Optional:    true,
 				Computed:    true,
@@ -65,7 +63,7 @@ func dataSourceResource() *schema.Resource {
 			},
 			"status": &schema.Schema{ // todo fix state in API
 				Type:        schema.TypeString,
-				Description: "Resource status",
+				Description: "Resource Status",
 				Computed:    true,
 			},
 			"created_at": {
@@ -80,7 +78,7 @@ func dataSourceResource() *schema.Resource {
 			},
 			"credentials": &schema.Schema{
 				Type:        schema.TypeList,
-				Description: "Resource credentials configuration",
+				Description: "Resource Credentials configuration",
 				MaxItems:    1,
 				Optional:    true,
 				Computed:    true,
@@ -89,7 +87,7 @@ func dataSourceResource() *schema.Resource {
 						"username": {
 							Type:         schema.TypeString,
 							Optional:     true,
-							Description:  "resource username",
+							Description:  "Resource username",
 							InputDefault: "",
 							ValidateFunc: nil, // todo add validation
 							Sensitive:    false,
@@ -98,7 +96,7 @@ func dataSourceResource() *schema.Resource {
 						"password": {
 							Type:         schema.TypeString,
 							Optional:     true,
-							Description:  "resource password",
+							Description:  "Resource password",
 							InputDefault: "",
 							ValidateFunc: nil, // todo add validation
 							Sensitive:    true,
@@ -108,26 +106,26 @@ func dataSourceResource() *schema.Resource {
 							Type:        schema.TypeString,
 							Optional:    true,
 							Computed:    true,
-							Description: "trusted certificates for verifying resource",
+							Description: "Resource CACert. Trusted certificates for verifying resource",
 						},
 						"clientcert": {
 							Type:        schema.TypeString,
 							Optional:    true,
 							Computed:    true,
-							Description: "client certificate for authenticating to the resource",
+							Description: "Resource Client Cert. Certificate for authenticating to the resource",
 						},
 						"clientkey": {
 							Type:        schema.TypeString,
 							Optional:    true,
 							Computed:    true,
-							Description: "client private key for authenticating to the resource",
+							Description: "Resource Client key. private key for authenticating to the resource",
 							Sensitive:   true,
 						},
 						"ssl": {
 							Type:        schema.TypeBool,
 							Optional:    true,
 							Computed:    true,
-							Description: "use SSL",
+							Description: "Resource SSL. Set Resource SSL option",
 						},
 					},
 				},

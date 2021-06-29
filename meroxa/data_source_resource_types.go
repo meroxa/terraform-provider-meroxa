@@ -16,7 +16,7 @@ func dataSourceResourceTypes() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"resource_types": &schema.Schema{
 				Type:        schema.TypeList,
-				Description: "List of support resource types",
+				Description: "List of supported resource types",
 				Computed:    true,
 				Elem: &schema.Schema{
 					Type:        schema.TypeString,

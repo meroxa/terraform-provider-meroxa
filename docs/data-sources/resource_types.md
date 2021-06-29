@@ -21,6 +21,6 @@ description: |-
 
 ### Read-Only
 
-- **resource_types** (List of String)
+- **resource_types** (List of String) List of supported resource types
 
 
