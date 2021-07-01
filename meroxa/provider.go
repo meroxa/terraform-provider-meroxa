@@ -77,6 +77,7 @@ func Provider(version string) func() *schema.Provider {
 				"meroxa_pipeline":       dataSourcePipeline(),
 				"meroxa_resource_types": dataSourceResourceTypes(),
 				"meroxa_resource":       dataSourceResource(),
+				"meroxa_transforms":     dataSourceTransforms(),
 			},
 		}
 		p.ConfigureContextFunc = configure(version, p)

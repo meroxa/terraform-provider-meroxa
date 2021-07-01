@@ -14,15 +14,13 @@ func dataSourceConnector() *schema.Resource {
 		ReadContext: dataSourceConnectorRead,
 		Schema: map[string]*schema.Schema{
 			"id": {
-				Type:          schema.TypeString,
-				Computed:      true,
-				ConflictsWith: []string{"name"},
-				Description:   "Connector ID",
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Connector ID",
 			},
 			"name": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Computed:    true,
 				Description: "Connector Name",
 			},
 			"type": {

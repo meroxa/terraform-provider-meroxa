@@ -20,9 +20,8 @@ func dataSourceResource() *schema.Resource {
 			},
 			"name": {
 				Type:        schema.TypeString,
-				Description: "Resource Name - (Required)",
+				Description: "Resource Name. (Required)",
 				Required:    true,
-				Computed:    true,
 			},
 			"type": {
 				Type:        schema.TypeString,
@@ -43,13 +42,11 @@ func dataSourceResource() *schema.Resource {
 			"ssh_tunnel": &schema.Schema{
 				Type:        schema.TypeList,
 				Description: "Resource SSH tunnel configuration",
-				MaxItems:    1,
 				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"address": {
 							Type:     schema.TypeString,
-							Optional: true,
 							Computed: true,
 						},
 						"public_key": {
@@ -77,7 +74,6 @@ func dataSourceResource() *schema.Resource {
 			"credentials": &schema.Schema{
 				Type:        schema.TypeList,
 				Description: "Resource Credentials configuration",
-				MaxItems:    1,
 				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
