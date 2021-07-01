@@ -7,15 +7,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"github.com/meroxa/meroxa-go"
 	"os"
-	"strings"
 	"testing"
 )
-
-func init() {
-	driver, rest := splitUrlSchema(os.Getenv("MEROXA_POSTGRES_URL"))
-	_, base := splitUrlCreds(rest)
-	postgresqlUrl = strings.Join([]string{driver, base}, "")
-}
 
 func TestAccMeroxaEndpoint_http(t *testing.T) {
 	testAccMeroxaEndpointBasic := fmt.Sprintf(`

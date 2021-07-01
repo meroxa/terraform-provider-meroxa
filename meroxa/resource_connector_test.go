@@ -6,28 +6,21 @@ import (
 	"github.com/meroxa/meroxa-go"
 	"os"
 	"strconv"
-	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func init() {
-	driver, rest := splitUrlSchema(os.Getenv("MEROXA_POSTGRES_URL"))
-	_, base := splitUrlCreds(rest)
-	postgresqlUrl = strings.Join([]string{driver, base}, "")
-}
-
 func TestAccMeroxaConnector_basic(t *testing.T) {
 	testAccMeroxaConnectionBasic := fmt.Sprintf(`
 	resource "meroxa_resource" "inline" {
-	  name = "connector_inline"
+	  name = "connector-inline"
 	  type = "postgres"
 	  url = "%s"
 	}
 	resource "meroxa_connector" "basic" {
-		name = "basic"
+		name = "connector-basic"
         source_id = meroxa_resource.inline.id
         input = "public"
 	}
@@ -41,7 +34,7 @@ func TestAccMeroxaConnector_basic(t *testing.T) {
 				Config: testAccMeroxaConnectionBasic,
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckMeroxaResourceExists("meroxa_connector.basic"),
-					resource.TestCheckResourceAttr("meroxa_connector.basic", "name", "basic"),
+					resource.TestCheckResourceAttr("meroxa_connector.basic", "name", "connector-basic"),
 					resource.TestCheckResourceAttr("meroxa_connector.basic", "type", "jdbc-source"),
 				),
 			},

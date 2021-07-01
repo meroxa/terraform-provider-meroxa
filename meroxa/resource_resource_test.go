@@ -13,23 +13,24 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-const (
-	postgresqlUsername = "user"
-	postgresqlPassword = "password"
+var (
+	postgresqlUrl      string
+	postgresqlUsername string
+	postgresqlPassword string
 )
-
-var postgresqlUrl string
 
 func init() {
 	driver, rest := splitUrlSchema(os.Getenv("MEROXA_POSTGRES_URL"))
-	_, base := splitUrlCreds(rest)
+	creds, base := splitUrlCreds(rest)
+	postgresqlUsername = strings.Split(creds, ":")[0]
+	postgresqlPassword = strings.Split(creds, ":")[1]
 	postgresqlUrl = strings.Join([]string{driver, base}, "")
 }
 
 func TestAccMeroxaResource_basic(t *testing.T) {
 	testAccMeroxaResourceBasic := fmt.Sprintf(`
 	resource "meroxa_resource" "basic" {
-	  name = "basic"
+	  name = "resource-basic"
 	  type = "postgres"
 	  url = "%s"
 	  credentials {
@@ -47,7 +48,7 @@ func TestAccMeroxaResource_basic(t *testing.T) {
 				Config: testAccMeroxaResourceBasic,
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckMeroxaResourceExists("meroxa_resource.basic"),
-					resource.TestCheckResourceAttr("meroxa_resource.basic", "name", "basic"),
+					resource.TestCheckResourceAttr("meroxa_resource.basic", "name", "resource-basic"),
 					resource.TestCheckResourceAttr("meroxa_resource.basic", "type", "postgres"),
 					resource.TestCheckResourceAttr("meroxa_resource.basic", "url", postgresqlUrl),
 				),
