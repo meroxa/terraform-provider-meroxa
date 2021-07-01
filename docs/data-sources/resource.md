@@ -22,7 +22,7 @@ data "meroxa_resource" "basic" {
 
 ### Required
 
-- **name** (String) Resource Name - (Required)
+- **name** (String) Resource Name. (Required)
 
 ### Read-Only
 
