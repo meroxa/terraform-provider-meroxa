@@ -9,24 +9,6 @@ import (
 	"time"
 )
 
-/*
- {
-                "id": 27,
-                "name": "Flatten",
-                "required": false,
-                "description": "Flatten a nested data structure, generating names for each field by concatenating the field names at each level with a configurable delimiter character. Applies to a Struct when a schema is present, or a Map in the case of schemaless data.",
-                "type": "builtin",
-                "properties": [
-                        {
-                                "name": "delimiter",
-                                "required": false,
-                                "type": "string"
-                        }
-                ]
-        }
-
-*/
-
 func dataSourceTransforms() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: dataSourceTransformsRead,
