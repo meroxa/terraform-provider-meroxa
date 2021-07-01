@@ -7,6 +7,8 @@ import (
 )
 
 func TestAccDataAPGroup_default(t *testing.T) {
+	// TODO add curl to create test transform
+	// TODO add cleanup test transform
 	datasourceAddress := "data.meroxa_transforms.default"
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -15,7 +17,7 @@ func TestAccDataAPGroup_default(t *testing.T) {
 			{
 				Config: testAccDataMeroxaTransforms,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr(datasourceAddress, "transforms.%", "1"),
+					testAccCheckMeroxaResourceExists(datasourceAddress),
 				),
 			},
 		},

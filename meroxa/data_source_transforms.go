@@ -38,7 +38,7 @@ func dataSourceTransforms() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"id": {
-							Type:        schema.TypeString,
+							Type:        schema.TypeInt,
 							Computed:    true,
 							Description: "Transform ID",
 						},
@@ -66,7 +66,25 @@ func dataSourceTransforms() *schema.Resource {
 							Type:        schema.TypeList,
 							Computed:    true,
 							Description: "Transform Properties",
-							Elem:        schema.TypeMap,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"name": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Property Name",
+									},
+									"type": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Property Type",
+									},
+									"required": {
+										Type:        schema.TypeBool,
+										Computed:    true,
+										Description: "Property Required",
+									},
+								},
+							},
 						},
 					},
 				},
@@ -86,10 +104,44 @@ func dataSourceTransformsRead(ctx context.Context, d *schema.ResourceData, m int
 		return diag.FromErr(err)
 	}
 
-	if err = d.Set("transforms", transforms); err != nil {
+	if err = d.Set("transforms", flattenTransform(transforms)); err != nil {
 		return diag.FromErr(err)
 	}
 	// always run
 	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
 	return diags
+}
+
+func flattenTransform(transforms []*meroxa.Transform) []interface{} {
+	if transforms != nil {
+		tMap := make([]interface{}, len(transforms), len(transforms))
+		for i, t := range transforms {
+			ti := make(map[string]interface{})
+			ti["id"] = t.ID
+			ti["name"] = t.Name
+			ti["required"] = t.Required
+			ti["description"] = t.Description
+			ti["type"] = t.Type
+			ti["properties"] = flattenProperties(t.Properties)
+
+			tMap[i] = ti
+		}
+		return tMap
+	}
+	return make([]interface{}, 0)
+}
+
+func flattenProperties(properties []meroxa.Property) []interface{} {
+	if properties != nil {
+		pMap := make([]interface{}, len(properties), len(properties))
+		for i, p := range properties {
+			pi := make(map[string]interface{})
+			pi["name"] = p.Name
+			pi["required"] = p.Required
+			pi["type"] = p.Type
+			pMap[i] = pi
+		}
+		return pMap
+	}
+	return make([]interface{}, 0)
 }
