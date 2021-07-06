@@ -96,7 +96,7 @@ func dataSourceTransformsRead(ctx context.Context, d *schema.ResourceData, m int
 
 func flattenTransform(transforms []*meroxa.Transform) []interface{} {
 	if transforms != nil {
-		tMap := make([]interface{}, len(transforms), len(transforms))
+		tMap := make([]interface{}, len(transforms))
 		for i, t := range transforms {
 			ti := make(map[string]interface{})
 			ti["id"] = t.ID
@@ -115,7 +115,7 @@ func flattenTransform(transforms []*meroxa.Transform) []interface{} {
 
 func flattenProperties(properties []meroxa.Property) []interface{} {
 	if properties != nil {
-		pMap := make([]interface{}, len(properties), len(properties))
+		pMap := make([]interface{}, len(properties))
 		for i, p := range properties {
 			pi := make(map[string]interface{})
 			pi["name"] = p.Name

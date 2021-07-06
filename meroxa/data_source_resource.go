@@ -32,7 +32,7 @@ func dataSourceResource() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "Resource URL. Warning will be thrown if credentials are placed inline. Using the credentials block is highly encouraged",
 				Computed:    true,
-				Sensitive:   false, //if we contain secrets
+				Sensitive:   false,
 			},
 			"metadata": {
 				Type:        schema.TypeMap,

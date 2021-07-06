@@ -48,10 +48,7 @@ func resourceResource() *schema.Resource {
 					_, nBase := splitUrlCreds(nRest)
 					nClean := strings.Join([]string{nDriver, nBase}, "")
 
-					if oClean == nClean {
-						return true
-					}
-					return false
+					return oClean == nClean
 				},
 			},
 			"metadata": {
@@ -224,10 +221,10 @@ func resourceResourceRead(ctx context.Context, d *schema.ResourceData, m interfa
 	d.Set("updated_at", r.UpdatedAt.String())
 
 	// todo fixes
-	//err = d.Set("credentials", flattenCredentials(r.Credentials))
-	//if err != nil {
-	//	return diag.FromErr(fmt.Errorf("error setting credentials: %s", err))
-	//}
+	// err = d.Set("credentials", flattenCredentials(r.Credentials))
+	// if err != nil {
+	//	 return diag.FromErr(fmt.Errorf("error setting credentials: %s", err))
+	// }
 
 	err = d.Set("ssh_tunnel", flattenSSHTunnel(r.SSHTunnel))
 	if err != nil {
@@ -243,11 +240,11 @@ func resourceResourceUpdate(ctx context.Context, d *schema.ResourceData, m inter
 
 	c := m.(*meroxa.Client)
 
-	//rID := d.Id()
-	//id, err := strconv.Atoi(rID)
-	//if err != nil {
-	//	return diag.FromErr(err)
-	//}
+	// rID := d.Id()
+	// id, err := strconv.Atoi(rID)
+	// if err != nil {
+	//	 return diag.FromErr(err)
+	// }
 	//todo check connectors
 	req := meroxa.UpdateResourceInput{
 		Name: d.Get("name").(string),
@@ -399,7 +396,6 @@ func splitUrlSchema(url string) (string, string) {
 		return s[0], s[1]
 	}
 	return "", s[0]
-
 }
 
 func splitUrlCreds(url string) (string, string) {

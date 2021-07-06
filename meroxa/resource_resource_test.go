@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	postgresqlUrl      string
+	postgresqlURL      string
 	postgresqlUsername string
 	postgresqlPassword string
 )
@@ -24,7 +24,7 @@ func init() {
 	creds, base := splitUrlCreds(rest)
 	postgresqlUsername = strings.Split(creds, ":")[0]
 	postgresqlPassword = strings.Split(creds, ":")[1]
-	postgresqlUrl = strings.Join([]string{driver, base}, "")
+	postgresqlURL = strings.Join([]string{driver, base}, "")
 }
 
 func TestAccMeroxaResource_basic(t *testing.T) {
@@ -38,7 +38,7 @@ func TestAccMeroxaResource_basic(t *testing.T) {
 		password = "%s"
 	  }
 	}
-	`, postgresqlUrl, postgresqlUsername, postgresqlPassword)
+	`, postgresqlURL, postgresqlUsername, postgresqlPassword)
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
@@ -50,7 +50,7 @@ func TestAccMeroxaResource_basic(t *testing.T) {
 					testAccCheckMeroxaResourceExists("meroxa_resource.basic"),
 					resource.TestCheckResourceAttr("meroxa_resource.basic", "name", "resource-basic"),
 					resource.TestCheckResourceAttr("meroxa_resource.basic", "type", "postgres"),
-					resource.TestCheckResourceAttr("meroxa_resource.basic", "url", postgresqlUrl),
+					resource.TestCheckResourceAttr("meroxa_resource.basic", "url", postgresqlURL),
 				),
 			},
 		},
@@ -76,7 +76,7 @@ func TestAccMeroxaResource_inline(t *testing.T) {
 					testAccCheckMeroxaResourceExists("meroxa_resource.inline"),
 					resource.TestCheckResourceAttr("meroxa_resource.inline", "name", "inline"),
 					resource.TestCheckResourceAttr("meroxa_resource.inline", "type", "postgres"),
-					resource.TestCheckResourceAttr("meroxa_resource.inline", "url", postgresqlUrl),
+					resource.TestCheckResourceAttr("meroxa_resource.inline", "url", postgresqlURL),
 				),
 			},
 		},

@@ -4,13 +4,12 @@ import (
 	"context"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"os"
-	"sync"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-// testAccProviderFactories is a static map containing only the main provider instance
+// testAccProviderFactories is a static map containing only the main provider instance.
 var testAccProviderFactories map[string]func() (*schema.Provider, error)
 
 // testAccProvider is the "main" provider instance
@@ -20,14 +19,6 @@ var testAccProviderFactories map[string]func() (*schema.Provider, error)
 //
 // testAccPreCheck(t) must be called before using this provider instance.
 var testAccProvider *schema.Provider
-
-// testAccProviderConfigure ensures testAccProvider is only configured once
-//
-// The testAccPreCheck(t) function is invoked for every test and this prevents
-// extraneous reconfiguration to the same values each time. However, this does
-// not prevent reconfiguration that may happen should the address of
-// testAccProvider be errantly reused in ProviderFactories.
-var testAccProviderConfigure sync.Once
 
 func init() {
 	testAccProvider = Provider("testacc")()
