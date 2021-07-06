@@ -99,13 +99,13 @@ jobs:
         with:
           go-version: ^1.16
 
-      - name: debug
-        uses: mxschmitt/action-tmate@v3
-        env:
-          TF_VAR_stripe_publishable_key: ${{ secrets.STAGING_STRIPE_PUBLISHABLE_KEY }}
-          TF_VAR_stripe_secret_key: ${{ secrets.STAGING_STRIPE_SECRET_KEY }}
-          TF_VAR_stripe_webhook_secret: ${{ secrets.STAGING_STRIPE_WEBHOOK_SECRET }}
-          TF_VAR_sentry_dsn: ${{ secrets.DEV_SENTRY_DSN }}
+#      - name: debug
+#        uses: mxschmitt/action-tmate@v3
+#        env:
+#          TF_VAR_stripe_publishable_key: ${{ secrets.STAGING_STRIPE_PUBLISHABLE_KEY }}
+#          TF_VAR_stripe_secret_key: ${{ secrets.STAGING_STRIPE_SECRET_KEY }}
+#          TF_VAR_stripe_webhook_secret: ${{ secrets.STAGING_STRIPE_WEBHOOK_SECRET }}
+#          TF_VAR_sentry_dsn: ${{ secrets.DEV_SENTRY_DSN }}
 
       # Set up control plane & data plane
       # This should already push the current API code to minikube
