@@ -37,12 +37,6 @@ func Provider(version string) func() *schema.Provider {
 					Sensitive:   true,
 					DefaultFunc: schema.EnvDefaultFunc("MEROXA_ACCESS_TOKEN", nil),
 				},
-				"refresh_token": &schema.Schema{
-					Type:        schema.TypeString,
-					Optional:    true,
-					Sensitive:   true,
-					DefaultFunc: schema.EnvDefaultFunc("MEROXA_REFRESH_TOKEN", nil),
-				},
 				"debug": &schema.Schema{
 					Type:     schema.TypeBool,
 					Optional: true,
@@ -88,7 +82,6 @@ func Provider(version string) func() *schema.Provider {
 func configure(version string, p *schema.Provider) func(context.Context, *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	return func(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 		accessToken := d.Get("access_token").(string)
-		refreshToken := d.Get("refresh_token").(string)
 
 		// Warning or errors can be collected in a slice type
 		var diags diag.Diagnostics
@@ -117,11 +110,10 @@ func configure(version string, p *schema.Provider) func(context.Context, *schema
 		// to catch requests to auth0
 		options = append(options, meroxa.WithAuthentication(
 			&oauth2.Config{
-				//ClientID: clientID,
 				Endpoint: meroxa.OAuth2Endpoint,
 			},
 			accessToken,
-			refreshToken,
+			"",
 		))
 
 		c, err := meroxa.New(options...)

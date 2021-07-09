@@ -182,17 +182,17 @@ func resourceConnectorRead(ctx context.Context, d *schema.ResourceData, m interf
 		return diag.FromErr(err)
 	}
 
-	d.Set("type", conn.Type)
-	d.Set("name", conn.Name)
-	d.Set("config", conn.Configuration)
-	d.Set("metadata", conn.Metadata)
+	_ = d.Set("type", conn.Type)
+	_ = d.Set("name", conn.Name)
+	_ = d.Set("config", conn.Configuration)
+	_ = d.Set("metadata", conn.Metadata)
 	err = d.Set("streams", flattenStreams(conn))
 	if err != nil {
 		return diag.FromErr(fmt.Errorf("error setting streams: %s", err))
 	}
-	d.Set("state", conn.State)
-	d.Set("pipeline_id", conn.PipelineID)
-	d.Set("pipeline_name", conn.PipelineName)
+	_ = d.Set("state", conn.State)
+	_ = d.Set("pipeline_id", conn.PipelineID)
+	_ = d.Set("pipeline_name", conn.PipelineName)
 
 	return diags
 }

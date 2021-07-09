@@ -102,12 +102,12 @@ func resourceEndpointRead(ctx context.Context, d *schema.ResourceData, m interfa
 		return diag.FromErr(err)
 	}
 
-	d.Set("protocol", e.Protocol)
-	d.Set("stream", e.Stream)
-	d.Set("ready", e.Ready)
-	d.Set("host", e.Host)
-	d.Set("basic_auth_username", e.BasicAuthUsername)
-	d.Set("basic_auth_password", e.BasicAuthPassword)
+	_ = d.Set("protocol", e.Protocol)
+	_ = d.Set("stream", e.Stream)
+	_ = d.Set("ready", e.Ready)
+	_ = d.Set("host", e.Host)
+	_ = d.Set("basic_auth_username", e.BasicAuthUsername)
+	_ = d.Set("basic_auth_password", e.BasicAuthPassword)
 
 	return diags
 }

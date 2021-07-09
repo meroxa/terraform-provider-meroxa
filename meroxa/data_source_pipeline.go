@@ -52,10 +52,10 @@ func dataSourcePipelineRead(ctx context.Context, d *schema.ResourceData, m inter
 		}
 	}
 
-	d.Set("id", strconv.Itoa(p.ID))
-	d.Set("name", p.Name)
-	d.Set("state", p.State)
-	d.Set("metadata", p.Metadata)
+	_ = d.Set("id", strconv.Itoa(p.ID))
+	_ = d.Set("name", p.Name)
+	_ = d.Set("state", p.State)
+	_ = d.Set("metadata", p.Metadata)
 
 	return diags
 }

@@ -81,8 +81,8 @@ func resourcePipelineRead(ctx context.Context, d *schema.ResourceData, m interfa
 		return diag.FromErr(err)
 	}
 
-	d.Set("metadata", p.Metadata)
-	d.Set("state", p.State)
+	_ = d.Set("metadata", p.Metadata)
+	_ = d.Set("state", p.State)
 
 	return diags
 }

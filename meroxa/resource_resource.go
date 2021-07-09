@@ -212,19 +212,13 @@ func resourceResourceRead(ctx context.Context, d *schema.ResourceData, m interfa
 		return diag.FromErr(err)
 	}
 
-	d.Set("name", r.Name)
-	d.Set("type", r.Type)
-	d.Set("url", r.URL)
-	d.Set("metadata", r.Metadata)
-	d.Set("status", r.Status.State) //todo flatten
-	d.Set("created_at", r.CreatedAt.String())
-	d.Set("updated_at", r.UpdatedAt.String())
-
-	// todo fixes
-	// err = d.Set("credentials", flattenCredentials(r.Credentials))
-	// if err != nil {
-	//	 return diag.FromErr(fmt.Errorf("error setting credentials: %s", err))
-	// }
+	_ = d.Set("name", r.Name)
+	_ = d.Set("type", r.Type)
+	_ = d.Set("url", r.URL)
+	_ = d.Set("metadata", r.Metadata)
+	_ = d.Set("status", r.Status.State)
+	_ = d.Set("created_at", r.CreatedAt.String())
+	_ = d.Set("updated_at", r.UpdatedAt.String())
 
 	err = d.Set("ssh_tunnel", flattenSSHTunnel(r.SSHTunnel))
 	if err != nil {
@@ -240,12 +234,6 @@ func resourceResourceUpdate(ctx context.Context, d *schema.ResourceData, m inter
 
 	c := m.(*meroxa.Client)
 
-	// rID := d.Id()
-	// id, err := strconv.Atoi(rID)
-	// if err != nil {
-	//	 return diag.FromErr(err)
-	// }
-	//todo check connectors
 	req := meroxa.UpdateResourceInput{
 		Name: d.Get("name").(string),
 		URL:  d.Get("url").(string),

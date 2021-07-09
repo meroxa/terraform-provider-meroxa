@@ -136,14 +136,14 @@ func dataSourceResourceRead(ctx context.Context, d *schema.ResourceData, m inter
 		}
 	}
 
-	d.Set("id", r.ID)
-	d.Set("name", r.Name)
-	d.Set("type", r.Type)
-	d.Set("url", r.URL)
-	d.Set("metadata", r.Metadata)
-	d.Set("status", r.Status.State) //todo flatten
-	d.Set("created_at", r.CreatedAt.String())
-	d.Set("updated_at", r.UpdatedAt.String())
+	_ = d.Set("id", r.ID)
+	_ = d.Set("name", r.Name)
+	_ = d.Set("type", r.Type)
+	_ = d.Set("url", r.URL)
+	_ = d.Set("metadata", r.Metadata)
+	_ = d.Set("status", r.Status.State) //todo flatten
+	_ = d.Set("created_at", r.CreatedAt.String())
+	_ = d.Set("updated_at", r.UpdatedAt.String())
 
 	err = d.Set("credentials", flattenCredentials(r.Credentials))
 	if err != nil {
