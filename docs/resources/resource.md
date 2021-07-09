@@ -36,7 +36,7 @@ resource "meroxa_resource" "credential_block" {
 
 - **name** (String) Resource name
 - **type** (String) Resource Type. Must be one of the supported resource types.
-- **url** (String) Resource URL. Warning will be thrown if credentials are placed inline. Using the credentials block is highly encouraged
+- **url** (String) Resource URL. Warning will be thrown if credentials are placed inline.Using the credentials block is highly encouraged
 
 ### Optional
 
