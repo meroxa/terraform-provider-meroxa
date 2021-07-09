@@ -3,11 +3,12 @@ package meroxa
 import (
 	"context"
 	"fmt"
-	"github.com/meroxa/meroxa-go"
 	"os"
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/meroxa/meroxa-go"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
@@ -20,8 +21,8 @@ var (
 )
 
 func init() {
-	driver, rest := splitUrlSchema(os.Getenv("MEROXA_POSTGRES_URL"))
-	creds, base := splitUrlCreds(rest)
+	driver, rest := splitURLSchema(os.Getenv("MEROXA_POSTGRES_URL"))
+	creds, base := splitURLCreds(rest)
 	postgresqlUsername = strings.Split(creds, ":")[0]
 	postgresqlPassword = strings.Split(creds, ":")[1]
 	postgresqlURL = strings.Join([]string{driver, base}, "")
@@ -111,11 +112,11 @@ func testAccCheckMeroxaResourceExists(n string) resource.TestCheckFunc {
 		rs, ok := s.RootModule().Resources[n]
 
 		if !ok {
-			return fmt.Errorf("Not found: %s", n)
+			return fmt.Errorf("not found: %s", n)
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No ResourceID set")
+			return fmt.Errorf("no ResourceID set")
 		}
 
 		return nil

@@ -3,13 +3,14 @@ package meroxa
 import (
 	"context"
 	"fmt"
+	"log"
+	"strconv"
+	"strings"
+
 	"github.com/hashicorp/go-cty/cty"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/meroxa/meroxa-go"
-	"log"
-	"strconv"
-	"strings"
 )
 
 func resourceResource() *schema.Resource {
@@ -32,20 +33,21 @@ func resourceResource() *schema.Resource {
 				ForceNew:    true,
 			},
 			"url": {
-				Type:             schema.TypeString,
-				Required:         true,
-				Description:      "Resource URL. Warning will be thrown if credentials are placed inline. Using the credentials block is highly encouraged",
+				Type:     schema.TypeString,
+				Required: true,
+				Description: "Resource URL. Warning will be thrown if credentials are placed inline." +
+					"Using the credentials block is highly encouraged",
 				ValidateDiagFunc: validateURL(),
 				Sensitive:        false,
 				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
 					// parse old value
-					oDriver, oRest := splitUrlSchema(old)
-					_, oBase := splitUrlCreds(oRest)
+					oDriver, oRest := splitURLSchema(old)
+					_, oBase := splitURLCreds(oRest)
 					oClean := strings.Join([]string{oDriver, oBase}, "")
 
 					// parse new value
-					nDriver, nRest := splitUrlSchema(new)
-					_, nBase := splitUrlCreds(nRest)
+					nDriver, nRest := splitURLSchema(new)
+					_, nBase := splitURLCreds(nRest)
 					nClean := strings.Join([]string{nDriver, nBase}, "")
 
 					return oClean == nClean
@@ -180,7 +182,8 @@ func resourceResourceCreate(ctx context.Context, d *schema.ResourceData, m inter
 			"Resource %q is successfully created but is pending for validation!\n"+
 				"Paste the following public key on your host:\n"+
 				tun.PublicKey+
-				"Meroxa will try to connect to the resource for 60 minutes and send an email confirmation after a successful resource validation.", res.Name)
+				"Meroxa will try to connect to the resource for 60 minutes and send an email confirmation after a "+
+				"successful resource validation.", res.Name)
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Warning,
 			Summary:  "Validate SSH Tunnel",
@@ -378,7 +381,7 @@ func validateURL() schema.SchemaValidateDiagFunc {
 	}
 }
 
-func splitUrlSchema(url string) (string, string) {
+func splitURLSchema(url string) (string, string) {
 	s := strings.SplitAfter(url, "://")
 	if len(s) == 2 {
 		return s[0], s[1]
@@ -386,7 +389,7 @@ func splitUrlSchema(url string) (string, string) {
 	return "", s[0]
 }
 
-func splitUrlCreds(url string) (string, string) {
+func splitURLCreds(url string) (string, string) {
 	s := strings.Split(url, "@")
 	if len(s) == 2 {
 		return s[0], s[1]

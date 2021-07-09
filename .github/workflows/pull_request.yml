@@ -30,23 +30,6 @@ jobs:
   staging_acceptance:
     name: Staging Acceptance Test
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:latest
-        env:
-          POSTGRES_DB: postgres
-          POSTGRES_PASSWORD: password
-          POSTGRES_USER: user
-        ports:
-          - 5432:5432
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
       - name: Checkout terraform provider
         uses: actions/checkout@v2
@@ -55,16 +38,6 @@ jobs:
       - uses: actions/setup-go@v2
         with:
           go-version: ^1.16
-#      - name: debug
-#        uses: mxschmitt/action-tmate@v3
-#        env:
-#          AUTH0_CLIENT_ID: ${{ secrets.AUTH0_ACCEPTANCE_CLIENT_ID }}
-#          AUTH0_DOMAIN: ${{ secrets.AUTH0_STAGING_DOMAIN }}
-#          AUTH0_AUDIENCE: ${{ secrets.AUTH0_STAGING_AUDIENCE }}
-#          AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_ACCEPTANCE_CLIENT_SECRET }}
-#          AUTH0_PASSWORD: ${{ secrets.AUTH0_PASSWORD }}
-#          AUTH0_USERNAME: ${{ secrets.AUTH0_USERNAME }}
-#          MEROXA_POSTGRES_URL: ${{ secrets.TEST_DB_URL }}
       # Run acceptance tests
       - name: Run Terraform Provider Acceptance tests
         working-directory: ./provider
