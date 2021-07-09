@@ -2,12 +2,15 @@ name: Build and Tests
 
 # Run this workflow every time a new PR wants to merge to master/main
 on:
-  push:
-    branches:
-      - spike
   pull_request:
     branches:
-      - spike
+      - main
+    paths-ignore:
+      - 'README.md'
+      - 'CHANGELOG.md'
+      - 'LICENSE'
+      - 'Makefile'
+      - 'docs/**'
 
 jobs:
   build:
