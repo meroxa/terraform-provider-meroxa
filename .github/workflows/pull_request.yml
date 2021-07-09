@@ -64,7 +64,7 @@ jobs:
           AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_ACCEPTANCE_CLIENT_SECRET }}
           AUTH0_PASSWORD: ${{ secrets.AUTH0_PASSWORD }}
           AUTH0_USERNAME: ${{ secrets.AUTH0_USERNAME }}
-          MEROXA_POSTGRES_URL: postgres://user:password@localhost:5432/postgres
+          MEROXA_POSTGRES_URL: ${{ secrets.TEST_DB_URL }}
       # Run acceptance tests
       - name: Run Terraform Provider Acceptance tests
         working-directory: ./provider
@@ -75,7 +75,7 @@ jobs:
           AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_ACCEPTANCE_CLIENT_SECRET }}
           AUTH0_PASSWORD: ${{ secrets.AUTH0_PASSWORD }}
           AUTH0_USERNAME: ${{ secrets.AUTH0_USERNAME }}
-          MEROXA_POSTGRES_URL: postgres://user:password@localhost:5432/postgres
+          MEROXA_POSTGRES_URL: ${{ secrets.TEST_DB_URL }}
           TF_ACC: true
         run: |
           MEROXA_API_URL="https://api.staging.meroxa.io/v1" \
