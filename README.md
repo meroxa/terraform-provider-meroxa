@@ -1,6 +1,17 @@
 # terraform-provider-meroxa
 Terraform provider for the Meroxa Platform
 
+- Website: https://www.terraform.io
+<img src="https://cdn.rawgit.com/hashicorp/terraform-website/master/content/source/assets/images/logo-hashicorp.svg" width="600px">
+  
+[![Support Server](https://img.shields.io/discord/591914197219016707.svg?label=Discord&logo=Discord&colorB=7289da&style=for-the-badge)](https://discord.com/channels/828680256877363200/828680256877363206)
+
+## Requirements
+
+-	[Terraform](https://www.terraform.io/downloads.html) v1.0.0
+-	[Go](https://golang.org/doc/install) 1.16 (to build the provider plugin)
+
+
 ## Build provider
 
 Run the following command to build the provider
