@@ -8,4 +8,5 @@ require (
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.7.0
 	github.com/meroxa/meroxa-go v0.0.0-20210614173638-1e63b7d707db
 	golang.org/x/oauth2 v0.0.0-20210413134643-5e61552d6c78
+	golang.org/x/tools v0.1.4 // indirect
 )
