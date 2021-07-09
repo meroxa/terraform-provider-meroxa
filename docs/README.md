@@ -9,7 +9,7 @@ description: |-
 
 The Meroxa provider provides resources to interact with the Meroxa platform API.
 
-Get `access_token` and `refresh_token` by loggin into the Meroxa CLI.
+Get `access_token` by logging into the Meroxa CLI.
 
 Mac
 ```bash
