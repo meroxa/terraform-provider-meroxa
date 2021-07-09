@@ -1,0 +1,18 @@
+---
+layout: 'meroxa'
+page_title: "{{.Type}}: {{.Name}}"
+sidebar_current: "docs-meroxa-{{ .Name }}"
+subcategory: ""
+description: |-
+{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
+---
+
+# {{.Type}}: {{.Name}}
+{{ .Description | trimspace }}
+
+{{ if .HasExample -}}
+## Example Usage
+{{ printf "{{tffile %q}}" .ExampleFile }}
+{{- end }}
+
+{{ .SchemaMarkdown | trimspace }}
