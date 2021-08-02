@@ -13,7 +13,7 @@ func dataSourceTransforms() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: dataSourceTransformsRead,
 		Schema: map[string]*schema.Schema{
-			"transforms": &schema.Schema{
+			"transforms": {
 				Type:        schema.TypeList,
 				Description: "List of Transforms",
 				Computed:    true,

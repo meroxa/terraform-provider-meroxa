@@ -69,22 +69,22 @@ func dataSourceConnector() *schema.Resource {
 				Computed:    true,
 				Elem:        schema.TypeString,
 			},
-			"pipeline_id": &schema.Schema{
+			"pipeline_id": {
 				Type:        schema.TypeInt,
 				Description: "Connector's Pipeline ID, uses default pipeline if not specified",
 				Computed:    true,
 			},
-			"pipeline_name": &schema.Schema{
+			"pipeline_name": {
 				Type:        schema.TypeString,
 				Description: "Connector's Pipeline Name, uses default pipeline if not specified",
 				Computed:    true,
 			},
-			"source_id": &schema.Schema{ // todo fix state in API
+			"source_id": {
 				Type:        schema.TypeString,
 				Description: "The resource ID for a source connector",
 				Computed:    true,
 			},
-			"destination_id": &schema.Schema{ // todo fix state in API
+			"destination_id": {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Description: "The resource ID for a destination connector",

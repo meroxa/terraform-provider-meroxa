@@ -74,25 +74,25 @@ func resourceConnector() *schema.Resource {
 				Computed:    true,
 				Elem:        schema.TypeString,
 			},
-			"pipeline_id": &schema.Schema{
+			"pipeline_id": {
 				Type:        schema.TypeInt,
 				Description: "Connector's Pipeline ID, uses default pipeline if not specified",
 				Optional:    true,
 				Computed:    true,
 			},
-			"pipeline_name": &schema.Schema{
+			"pipeline_name": {
 				Type:        schema.TypeString,
 				Description: "Connector's Pipeline Name, uses default pipeline if not specified",
 				Optional:    true,
 				Computed:    true,
 			},
-			"source_id": &schema.Schema{
+			"source_id": {
 				Type:          schema.TypeString,
 				Description:   "The resource ID for a source connector",
 				Optional:      true,
 				ConflictsWith: []string{"destination_id"},
 			},
-			"destination_id": &schema.Schema{
+			"destination_id": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Description: "The resource ID for a destination connector",

@@ -59,7 +59,7 @@ func resourceResource() *schema.Resource {
 				Optional:    true,
 				Elem:        schema.TypeString,
 			},
-			"ssh_tunnel": &schema.Schema{
+			"ssh_tunnel": {
 				Type:        schema.TypeList,
 				Description: "Resource ssh tunnel configuration",
 				MaxItems:    1,
@@ -79,7 +79,7 @@ func resourceResource() *schema.Resource {
 					},
 				},
 			},
-			"status": &schema.Schema{ // todo fix state in API
+			"status": { // todo fix state in API
 				Type:        schema.TypeString,
 				Description: "Resource status",
 				Computed:    true,
@@ -94,7 +94,7 @@ func resourceResource() *schema.Resource {
 				Description: "Resource Updated at timestamp",
 				Computed:    true,
 			},
-			"credentials": &schema.Schema{
+			"credentials": {
 				Type:        schema.TypeList,
 				Description: "Resource credentials configuration",
 				MaxItems:    1,

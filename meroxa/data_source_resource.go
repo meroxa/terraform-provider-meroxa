@@ -40,7 +40,7 @@ func dataSourceResource() *schema.Resource {
 				Description: "Resource Metadata",
 				Computed:    true,
 			},
-			"ssh_tunnel": &schema.Schema{
+			"ssh_tunnel": {
 				Type:        schema.TypeList,
 				Description: "Resource SSH tunnel configuration",
 				Computed:    true,
@@ -57,7 +57,7 @@ func dataSourceResource() *schema.Resource {
 					},
 				},
 			},
-			"status": &schema.Schema{ // todo fix state in API
+			"status": { // todo fix state in API
 				Type:        schema.TypeString,
 				Description: "Resource Status",
 				Computed:    true,
@@ -72,7 +72,7 @@ func dataSourceResource() *schema.Resource {
 				Description: "Resource Updated at timestamp",
 				Computed:    true,
 			},
-			"credentials": &schema.Schema{
+			"credentials": {
 				Type:        schema.TypeList,
 				Description: "Resource Credentials configuration",
 				Computed:    true,

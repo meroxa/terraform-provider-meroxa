@@ -31,13 +31,13 @@ func Provider(version string) func() *schema.Provider {
 	return func() *schema.Provider {
 		p := &schema.Provider{
 			Schema: map[string]*schema.Schema{
-				"access_token": &schema.Schema{
+				"access_token": {
 					Type:        schema.TypeString,
 					Required:    true,
 					Sensitive:   true,
 					DefaultFunc: schema.EnvDefaultFunc("MEROXA_ACCESS_TOKEN", nil),
 				},
-				"debug": &schema.Schema{
+				"debug": {
 					Type:     schema.TypeBool,
 					Optional: true,
 					DefaultFunc: func() (interface{}, error) {
@@ -48,12 +48,12 @@ func Provider(version string) func() *schema.Provider {
 						return v == "1" || v == "true" || v == "on", nil
 					},
 				},
-				"timeout": &schema.Schema{
+				"timeout": {
 					Type:        schema.TypeInt,
 					Optional:    true,
 					DefaultFunc: schema.EnvDefaultFunc("MEROXA_TIMEOUT", nil),
 				},
-				"api_url": &schema.Schema{
+				"api_url": {
 					Type:        schema.TypeString,
 					Optional:    true,
 					DefaultFunc: schema.EnvDefaultFunc("MEROXA_API_URL", nil),
