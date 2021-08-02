@@ -23,13 +23,13 @@ jobs:
           go-version: ^1.16
       - name: Build
         run: make build
-#  vet:
-#    name: Vet
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v2
-#      - name: Vet
-#        run: make vet
+  vet:
+    name: Vet
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Vet
+        run: make vet
   staging_acceptance:
     name: Staging Acceptance Test
     runs-on: ubuntu-latest
