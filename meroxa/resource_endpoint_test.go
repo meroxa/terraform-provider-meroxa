@@ -13,24 +13,24 @@ import (
 
 func TestAccMeroxaEndpoint_http(t *testing.T) {
 	testAccMeroxaEndpointBasic := fmt.Sprintf(`
-	resource "meroxa_resource" "endpoint_test" {
+	resource "meroxa_resource" "http" {
 	  name = "http-acceptance"
 	  type = "postgres"
 	  url = "%s"
 	}
-	resource "meroxa_pipeline" "endpoint_test" {
-	  name = "endpoint-test"
+	resource "meroxa_pipeline" "http" {
+	  name = "endpoint-http"
 	}
-	resource "meroxa_connector" "endpoint_test" {
+	resource "meroxa_connector" "http" {
 		name = "http-acceptance"
-		pipeline_id = meroxa_pipeline.endpoint_test.id
-        source_id = meroxa_resource.endpoint_test.id
+		pipeline_id = meroxa_pipeline.http.id
+        source_id = meroxa_resource.http.id
         input = "public"
 	}
 	resource "meroxa_endpoint" "http" {
 		name = "http"
         protocol = "HTTP"
-		stream = meroxa_connector.endpoint_test.streams[0].output[0]
+		stream = meroxa_connector.http.streams[0].output[0]
 	}
 	`, os.Getenv("MEROXA_POSTGRES_URL"))
 	resource.Test(t, resource.TestCase{
@@ -52,20 +52,24 @@ func TestAccMeroxaEndpoint_http(t *testing.T) {
 
 func TestAccMeroxaEndpoint_grpc(t *testing.T) {
 	testAccMeroxaEndpointBasic := fmt.Sprintf(`
-	resource "meroxa_resource" "inline" {
+	resource "meroxa_resource" "grpc" {
 	  name = "grpc-acceptance"
 	  type = "postgres"
 	  url = "%s"
 	}
-	resource "meroxa_connector" "basic" {
+	resource "meroxa_pipeline" "grpc" {
+	  name = "endpoint-grpc"
+	}
+	resource "meroxa_connector" "grpc" {
 		name = "grpc-acceptance"
-        source_id = meroxa_resource.inline.id
+		pipeline_id = meroxa_pipeline.grpc.id
+        source_id = meroxa_resource.grpc.id
         input = "public"
 	}
 	resource "meroxa_endpoint" "grpc" {
 		name = "grpc"
         protocol = "GRPC"
-		stream = meroxa_connector.basic.streams[0].output[0]
+		stream = meroxa_connector.grpc.streams[0].output[0]
 	}
 	`, os.Getenv("MEROXA_POSTGRES_URL"))
 	resource.Test(t, resource.TestCase{
