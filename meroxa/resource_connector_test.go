@@ -20,8 +20,12 @@ func TestAccMeroxaConnector_basic(t *testing.T) {
 	  type = "postgres"
 	  url = "%s"
 	}
+	resource "meroxa_pipeline" "connector_test" {
+	  name = "connector-test"
+	}
 	resource "meroxa_connector" "basic" {
 		name = "connector-basic"
+		pipeline_id = meroxa_pipeline.connector_test.id
         source_id = meroxa_resource.inline.id
         input = "public"
 	}
