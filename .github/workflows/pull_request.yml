@@ -42,8 +42,6 @@ jobs:
         with:
           go-version: ^1.16
       # Run acceptance tests
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
       - name: Run Terraform Provider Acceptance tests
         working-directory: ./provider
         env:
@@ -68,6 +66,9 @@ jobs:
             --data 'client_id='"$AUTH0_CLIENT_ID"'' \
             --data client_secret=$AUTH0_CLIENT_SECRET | jq -r .access_token)
           make testacc-ci
+      - name: Setup tmate session
+        if: always()
+        uses: mxschmitt/action-tmate@v3
 
       - name: Annotate tests
         if: always()
