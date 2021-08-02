@@ -13,20 +13,24 @@ import (
 
 func TestAccMeroxaEndpoint_http(t *testing.T) {
 	testAccMeroxaEndpointBasic := fmt.Sprintf(`
-	resource "meroxa_resource" "inline" {
+	resource "meroxa_resource" "endpoint_test" {
 	  name = "http-acceptance"
 	  type = "postgres"
 	  url = "%s"
 	}
-	resource "meroxa_connector" "basic" {
+	resource "meroxa_pipeline" "endpoint_test" {
+	  name = "endpoint-test"
+	}
+	resource "meroxa_connector" "endpoint_test" {
 		name = "http-acceptance"
-        source_id = meroxa_resource.inline.id
+		pipeline_id = meroxa_pipeline.endpoint_test.id
+        source_id = meroxa_resource.endpoint_test.id
         input = "public"
 	}
 	resource "meroxa_endpoint" "http" {
 		name = "http"
         protocol = "HTTP"
-		stream = meroxa_connector.basic.streams[0].output[0]
+		stream = meroxa_connector.endpoint_test.streams[0].output[0]
 	}
 	`, os.Getenv("MEROXA_POSTGRES_URL"))
 	resource.Test(t, resource.TestCase{

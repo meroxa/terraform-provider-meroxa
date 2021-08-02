@@ -15,7 +15,7 @@ import (
 
 func TestAccMeroxaConnector_basic(t *testing.T) {
 	testAccMeroxaConnectionBasic := fmt.Sprintf(`
-	resource "meroxa_resource" "inline" {
+	resource "meroxa_resource" "connector_test" {
 	  name = "connector-inline"
 	  type = "postgres"
 	  url = "%s"
@@ -26,7 +26,7 @@ func TestAccMeroxaConnector_basic(t *testing.T) {
 	resource "meroxa_connector" "basic" {
 		name = "connector-basic"
 		pipeline_id = meroxa_pipeline.connector_test.id
-        source_id = meroxa_resource.inline.id
+        source_id = meroxa_resource.connector_test.id
         input = "public"
 	}
 	`, os.Getenv("MEROXA_POSTGRES_URL"))
