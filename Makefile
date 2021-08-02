@@ -42,6 +42,10 @@ test:
 testacc:
 	TF_ACC=1 go test ./... -v $(TESTARGS) -timeout 120m
 
+.PHONY: testacc
+testacc-ci:
+	TF_ACC=1 go test -json ./... -v $(TESTARGS) -timeout 120m > test.json
+
 
 .PHONY: vet
 vet:

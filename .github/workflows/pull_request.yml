@@ -65,4 +65,11 @@ jobs:
             --data scope=user \
             --data 'client_id='"$AUTH0_CLIENT_ID"'' \
             --data client_secret=$AUTH0_CLIENT_SECRET | jq -r .access_token)
-          make testacc
+          make testacc-ci
+
+      - name: Annotate tests
+        if: always()
+        uses: guyarb/golang-test-annotations@v0.3.0
+        with:
+          test-results: test.json
+          package-name: meroxa
