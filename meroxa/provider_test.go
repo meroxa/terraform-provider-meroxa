@@ -2,9 +2,10 @@ package meroxa
 
 import (
 	"context"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"os"
 	"testing"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -26,7 +27,7 @@ func init() {
 	// Always allocate a new provider instance each invocation, otherwise gRPC
 	// ProviderConfigure() can overwrite configuration during concurrent testing.
 	testAccProviderFactories = map[string]func() (*schema.Provider, error){
-		"meroxa": func() (*schema.Provider, error) {
+		"meroxa": func() (*schema.Provider, error) { //nolint:unparam
 			return Provider("testacc")(), nil
 		},
 	}

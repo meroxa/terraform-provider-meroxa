@@ -3,11 +3,12 @@ package meroxa
 import (
 	"context"
 	"fmt"
+	"os"
+	"testing"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"github.com/meroxa/meroxa-go"
-	"os"
-	"testing"
 )
 
 func TestAccMeroxaEndpoint_http(t *testing.T) {

@@ -3,8 +3,9 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
 	"log"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
 
 	"terraform-provider-meroxa/meroxa"
 )

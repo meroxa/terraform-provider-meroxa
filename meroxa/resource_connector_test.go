@@ -3,10 +3,11 @@ package meroxa
 import (
 	"context"
 	"fmt"
-	"github.com/meroxa/meroxa-go"
 	"os"
 	"strconv"
 	"testing"
+
+	"github.com/meroxa/meroxa-go"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
