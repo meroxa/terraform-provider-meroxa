@@ -7,7 +7,7 @@ builds:
   mod_timestamp: '{{ .CommitTimestamp }}'
   flags:
     - -trimpath
-    - mod=vendor
+    - -mod=vendor
   ldflags:
     - '-s -w -X main.version={{.Version}}'
   goos:
