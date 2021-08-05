@@ -1,0 +1,15 @@
+```release-note:new-resource
+meroxa_connector
+meroxa_endpoint
+meroxa_pipeline
+meroxa_resource
+```
+
+```release-note:new-data-source
+meroxa_connector
+meroxa_endpoint
+meroxa_pipeline
+meroxa_resource
+meroxa_resource_types
+meroxa_transforms
+```
