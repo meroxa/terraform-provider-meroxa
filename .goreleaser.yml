@@ -1,9 +1,6 @@
 # Visit https://goreleaser.com for documentation on how to customize this
 # behavior.
 project_name: terraform-provider-meroxa
-before:
-  hooks:
-    - go mod download
 builds:
 - env:
     # goreleaser does not work with CGO, it could also complicate
@@ -13,6 +10,7 @@ builds:
   mod_timestamp: '{{ .CommitTimestamp }}'
   flags:
     - -trimpath
+    - mod=vendor
   ldflags:
     - '-s -w -X main.version={{.Version}}'
   goos:
