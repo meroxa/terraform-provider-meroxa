@@ -3,7 +3,9 @@ package meroxa
 import (
 	"context"
 	"fmt"
-	"os"
+	"log"
+	"net/url"
+	"regexp"
 	"strconv"
 	"strings"
 	"testing"
@@ -12,8 +14,18 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/joeshaw/envdecode"
 )
 
+type TestsConfig struct {
+	PostgresURL        string `env:"MEROXA_POSTGRES_URL,required"`
+	BastionUser        string `env:"MEROXA_BASTION_USER,default=ec2-user"`
+	BastionHost        string `env:"MEROXA_BASTION_HOST,required"`
+	BastionKey         string `env:"MEROXA_BASTION_KEY,required"`
+	PrivatePostgresURL string `env:"MEROXA_PRIVATE_POSTGRES_URL,required"`
+}
+
+var Config TestsConfig
 var (
 	postgresqlURL      string
 	postgresqlUsername string
@@ -21,7 +33,12 @@ var (
 )
 
 func init() {
-	driver, rest := splitURLSchema(os.Getenv("MEROXA_POSTGRES_URL"))
+	err := envdecode.Decode(&Config)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	driver, rest := splitURLSchema(Config.PostgresURL)
 	creds, base := splitURLCreds(rest)
 	postgresqlUsername = strings.Split(creds, ":")[0]
 	postgresqlPassword = strings.Split(creds, ":")[1]
@@ -65,7 +82,7 @@ func TestAccMeroxaResource_inline(t *testing.T) {
 	  type = "postgres"
 	  url = "%s"
 	}
-	`, os.Getenv("MEROXA_POSTGRES_URL"))
+	`, Config.PostgresURL)
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
@@ -78,6 +95,51 @@ func TestAccMeroxaResource_inline(t *testing.T) {
 					resource.TestCheckResourceAttr("meroxa_resource.inline", "name", "inline"),
 					resource.TestCheckResourceAttr("meroxa_resource.inline", "type", "postgres"),
 					resource.TestCheckResourceAttr("meroxa_resource.inline", "url", postgresqlURL),
+				),
+			},
+		},
+	})
+}
+
+func TestAccMeroxaResource_sshTunnel(t *testing.T) {
+	bastionAddr := fmt.Sprintf("%s@%s", Config.BastionUser, Config.BastionHost)
+	privatePostgresURL, err := URLWithoutCredentials(Config.PrivatePostgresURL)
+	if err != nil {
+		t.Error(err)
+	}
+	// SSH public keys have a preamble with base64 encoded data following.
+	pubkeyRegex := regexp.MustCompile(
+		`^ssh-rsa (?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})$`,
+	)
+
+	testAccMeroxaResourceSSHTunnel := fmt.Sprintf(
+		`resource "meroxa_resource" "with_tunnel" {
+	  		name = "with_ssh_tunnel"
+	  		type = "postgres"
+	  		url = %q
+	  		ssh_tunnel {
+	  			address = %q
+	  			private_key = %s
+	  		}
+		}`,
+		Config.PrivatePostgresURL,
+		bastionAddr,
+		fmt.Sprintf("<<-EOT\n%s\nEOT\n", Config.BastionKey),
+	)
+	resource.Test(t, resource.TestCase{
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckMeroxaResourceDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccMeroxaResourceSSHTunnel,
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckMeroxaResourceExists("meroxa_resource.with_tunnel"),
+					resource.TestCheckResourceAttr("meroxa_resource.with_tunnel", "name", "with_ssh_tunnel"),
+					resource.TestCheckResourceAttr("meroxa_resource.with_tunnel", "type", "postgres"),
+					resource.TestCheckResourceAttr("meroxa_resource.with_tunnel", "url", privatePostgresURL),
+					resource.TestCheckResourceAttr("meroxa_resource.with_tunnel", "ssh_tunnel.0.address", bastionAddr),
+					resource.TestMatchResourceAttr("meroxa_resource.with_tunnel", "ssh_tunnel.0.public_key", pubkeyRegex),
 				),
 			},
 		},
@@ -121,4 +183,14 @@ func testAccCheckMeroxaResourceExists(n string) resource.TestCheckFunc {
 
 		return nil
 	}
+}
+
+func URLWithoutCredentials(u string) (string, error) {
+	parsed, err := url.Parse(u)
+	if err != nil {
+		return "", err
+	}
+
+	parsed.User = nil
+	return parsed.String(), nil
 }
