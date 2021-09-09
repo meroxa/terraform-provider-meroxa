@@ -38,12 +38,19 @@ type CreateResourceInput struct {
 }
 
 type ResourceSSHTunnelInput struct {
-	Address string `json:"address"`
+	Address    string `json:"address"`
+	PrivateKey string `json:"private_key"`
 }
 
 type ResourceSSHTunnel struct {
 	Address   string `json:"address"`
 	PublicKey string `json:"public_key"`
+}
+
+type ResourceStatus struct {
+	State         string    `json:"state"`
+	Details       string    `json:"details"`
+	LastUpdatedAt time.Time `json:"last_updated_at"`
 }
 
 // Resource represents the Meroxa Resource type within the Meroxa API
@@ -55,11 +62,9 @@ type Resource struct {
 	Credentials *Credentials           `json:"credentials,omitempty"`
 	Metadata    map[string]interface{} `json:"metadata,omitempty"`
 	SSHTunnel   *ResourceSSHTunnel     `json:"ssh_tunnel,omitempty"`
-	Status      struct {
-		State string `json:"state"`
-	} `json:"status"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	Status      ResourceStatus         `json:"status"`
+	CreatedAt   time.Time              `json:"created_at"`
+	UpdatedAt   time.Time              `json:"updated_at"`
 }
 
 // UpdateResourceInput represents the Meroxa Resource we're updating in the Meroxa API
@@ -282,21 +287,26 @@ func encodeURLCreds(u string) (string, error) {
 		return "", ErrMissingScheme
 	}
 
-	rest := strings.Split(s1[1], "@") // pull out everything after the @
-	if len(rest) == 1 {               // no username and password
+	v := strings.Split(s1[1], "@") // pull out everything after the @
+	if len(v) == 1 {               // no username and password
 		return u, nil
 	}
 
-	escapedURL, err := url.Parse(scheme + rest[1])
+	rest := v[len(v)-1]
+	userInfoPart := strings.Join(v[:len(v)-1], "@")
+
+	escapedURL, err := url.Parse(scheme + rest)
 	if err != nil {
 		return "", err
 	}
 
-	if rest[0] != "" {
-		username := strings.Split(rest[0], ":")[0]
-		password := strings.Split(rest[0], ":")[1]
-		ui := url.UserPassword(username, password)
-		escapedURL.User = ui
+	if rest != "" {
+		userinfo := strings.Split(userInfoPart, ":")
+		if len(userinfo) > 1 {
+			escapedURL.User = url.UserPassword(userinfo[0], userinfo[1])
+		} else {
+			escapedURL.User = url.UserPassword(userinfo[0], "")
+		}
 	}
 
 	return escapedURL.String(), nil

@@ -52,6 +52,9 @@ jobs:
           AUTH0_PASSWORD: ${{ secrets.AUTH0_PASSWORD }}
           AUTH0_USERNAME: ${{ secrets.AUTH0_USERNAME }}
           MEROXA_POSTGRES_URL: ${{ secrets.TEST_DB_URL }}
+          MEROXA_BASTION_HOST: ${{ secrets.TEST_BASTION_URL }}
+          MEROXA_BASTION_KEY: ${{ secrets.TEST_BASTION_PRIVATE_KEY }}
+          MEROXA_PRIVATE_POSTGRES_URL: ${{ secrets.TEST_PRIVATE_PG_URL }}
           TF_ACC: true
         run: |
           export MEROXA_API_URL="https://api.staging.meroxa.io/v1"

@@ -69,7 +69,20 @@ func resourceResource() *schema.Resource {
 						"address": {
 							Type:        schema.TypeString,
 							Description: "Bastion host address",
+							Required:    true,
+						},
+						"private_key": {
+							Type:        schema.TypeString,
+							Description: "SSH private Key",
+							Sensitive:   true,
 							Optional:    true,
+							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+								if v, ok := d.GetOk("ssh_tunnel"); ok {
+									sshTunnel := expandSSHTunnel(v.([]interface{}))
+									return sshTunnel.PrivateKey == new
+								}
+								return false
+							},
 						},
 						"public_key": {
 							Type:        schema.TypeString,
@@ -342,6 +355,11 @@ func expandSSHTunnel(vSSHTunnel []interface{}) *meroxa.ResourceSSHTunnelInput {
 	if vAddress, ok := mSSHTunnel["address"].(string); ok && vAddress != "" {
 		sshTunnel.Address = vAddress
 	}
+
+	if vPrivateKey, ok := mSSHTunnel["private_key"].(string); ok && vPrivateKey != "" {
+		sshTunnel.PrivateKey = vPrivateKey
+	}
+
 	return sshTunnel
 }
 
