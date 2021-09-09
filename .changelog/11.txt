@@ -1,0 +1,4 @@
+```release-note:enhancement
+Add new `private_key` attribute to `meroxa_resource.ssh_tunnel`.
+Make attribute `address` on `meroxa_resource.ssh_tunnel` required.
+```
