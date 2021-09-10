@@ -71,12 +71,12 @@ func dataSourceConnector() *schema.Resource {
 			},
 			"pipeline_id": {
 				Type:        schema.TypeInt,
-				Description: "Connector's Pipeline ID, uses default pipeline if not specified",
+				Description: "Connector's Pipeline ID",
 				Computed:    true,
 			},
 			"pipeline_name": {
 				Type:        schema.TypeString,
-				Description: "Connector's Pipeline Name, uses default pipeline if not specified",
+				Description: "Connector's Pipeline Name",
 				Computed:    true,
 			},
 			"source_id": {
