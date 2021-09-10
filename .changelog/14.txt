@@ -1,0 +1,3 @@
+```release-note:improvement
+Make attribute `pipeline_id` on `meroxa_resource_connector` required.
+```
