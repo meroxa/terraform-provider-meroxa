@@ -1,7 +1,8 @@
 name: Generate CHANGELOG
 on:
-  pull_request:
-    types: [closed]
+  push:
+    tags:
+      - v1.*
   workflow_dispatch:
 jobs:
   GenerateChangelog:
