@@ -78,12 +78,11 @@ func resourceConnector() *schema.Resource {
 			"pipeline_id": {
 				Type:         schema.TypeInt,
 				Description:  "Connector's Pipeline ID, uses default pipeline if not specified",
-				ExactlyOneOf: []string{"pipeline_name"},
+				ExactlyOneOf: []string{"pipeline_name", "pipeline_id"},
 			},
 			"pipeline_name": {
 				Type:         schema.TypeString,
 				Description:  "Connector's Pipeline Name, uses default pipeline if not specified",
-				ExactlyOneOf: []string{"pipeline_id"},
 			},
 			"source_id": {
 				Type:          schema.TypeString,
