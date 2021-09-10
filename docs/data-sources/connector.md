@@ -25,8 +25,8 @@ description: |-
 - **destination_id** (String) The resource ID for a destination connector
 - **id** (String) Connector ID
 - **metadata** (Map of String) Connector metadata
-- **pipeline_id** (Number) Connector's Pipeline ID, uses default pipeline if not specified
-- **pipeline_name** (String) Connector's Pipeline Name, uses default pipeline if not specified
+- **pipeline_id** (Number) Connector's Pipeline ID
+- **pipeline_name** (String) Connector's Pipeline Name
 - **source_id** (String) The resource ID for a source connector
 - **state** (String) Connector state
 - **streams** (List of Object) Connector Streams (see [below for nested schema](#nestedatt--streams))

@@ -77,14 +77,12 @@ func resourceConnector() *schema.Resource {
 			},
 			"pipeline_id": {
 				Type:        schema.TypeInt,
-				Description: "Connector's Pipeline ID, uses default pipeline if not specified",
-				Optional:    true,
-				Computed:    true,
+				Description: "Connector's Pipeline ID",
+				Required:    true,
 			},
 			"pipeline_name": {
 				Type:        schema.TypeString,
-				Description: "Connector's Pipeline Name, uses default pipeline if not specified",
-				Optional:    true,
+				Description: "Connector's Pipeline Name",
 				Computed:    true,
 			},
 			"source_id": {
@@ -118,6 +116,10 @@ func resourceConnectorCreate(ctx context.Context, d *schema.ResourceData, m inte
 	}
 	if v, ok := d.GetOk("pipeline_id"); ok {
 		input.PipelineID = v.(int)
+	}
+
+	if v, ok := d.GetOk("pipeline_name"); ok {
+		input.PipelineName = v.(string)
 	}
 
 	if v, ok := d.GetOk("config"); ok {
