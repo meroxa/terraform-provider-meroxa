@@ -14,7 +14,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccMeroxaConnector_WithPipeline_basic(t *testing.T) {
+func TestAccMeroxaConnector_basic(t *testing.T) {
 	testAccMeroxaConnectionBasic := fmt.Sprintf(`
 	resource "meroxa_resource" "connector_test" {
 	  name = "connector-inline"
