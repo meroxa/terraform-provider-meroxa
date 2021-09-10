@@ -67,9 +67,13 @@ Optional:
 <a id="nestedblock--ssh_tunnel"></a>
 ### Nested Schema for `ssh_tunnel`
 
-Optional:
+Required:
 
 - **address** (String) Bastion host address
+
+Optional:
+
+- **private_key** (String, Sensitive) SSH private Key
 
 Read-Only:
 
