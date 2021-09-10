@@ -18,10 +18,15 @@ resource "meroxa_resource" "inline" {
   url  = "postgres://foo:bar@example:5432/db"
 }
 
+resource "meroxa_pipeline" "basic" {
+  name = "pipeline"
+}
+
 resource "meroxa_connector" "basic" {
-  name      = "basic"
-  source_id = meroxa_resource.inline.id
-  input     = "public.Users"
+  name        = "basic"
+  source_id   = meroxa_resource.inline.id
+  input       = "public.Users"
+  pipeline_id = meroxa_pipeline.basic.id
 }
 ```
 
@@ -32,6 +37,7 @@ resource "meroxa_connector" "basic" {
 
 - **input** (String) Input stream
 - **name** (String) Connector Name
+- **pipeline_id** (Number) Connector's Pipeline ID
 
 ### Optional
 
@@ -39,12 +45,11 @@ resource "meroxa_connector" "basic" {
 - **destination_id** (String) The resource ID for a destination connector
 - **id** (String) The ID of this resource.
 - **metadata** (Map of String) Connector metadata
-- **pipeline_id** (Number) Connector's Pipeline ID, uses default pipeline if not specified
-- **pipeline_name** (String) Connector's Pipeline Name, uses default pipeline if not specified
 - **source_id** (String) The resource ID for a source connector
 
 ### Read-Only
 
+- **pipeline_name** (String) Connector's Pipeline Name
 - **state** (String) Connector state
 - **streams** (List of Object) Connector Streams (see [below for nested schema](#nestedatt--streams))
 - **type** (String) Connector Type
