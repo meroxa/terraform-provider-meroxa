@@ -76,13 +76,6 @@ func resourceResource() *schema.Resource {
 							Description: "SSH private Key",
 							Sensitive:   true,
 							Optional:    true,
-							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-								if v, ok := d.GetOk("ssh_tunnel"); ok {
-									sshTunnel := expandSSHTunnel(v.([]interface{}))
-									return sshTunnel.PrivateKey == new
-								}
-								return false
-							},
 						},
 						"public_key": {
 							Type:        schema.TypeString,
@@ -236,8 +229,18 @@ func resourceResourceRead(ctx context.Context, d *schema.ResourceData, m interfa
 	_ = d.Set("created_at", r.CreatedAt.String())
 	_ = d.Set("updated_at", r.UpdatedAt.String())
 
-	err = d.Set("ssh_tunnel", flattenSSHTunnel(r.SSHTunnel))
-	if err != nil {
+	sshTunnel := flattenSSHTunnel(r.SSHTunnel)
+	if sshTunnel == nil {
+		return diags
+	}
+
+	if v, ok := d.GetOk("ssh_tunnel"); ok {
+		if vv := expandSSHTunnel(v.([]interface{})); vv != nil {
+			sshTunnel["private_key"] = vv.PrivateKey
+		}
+	}
+
+	if err := d.Set("ssh_tunnel", []interface{}{sshTunnel}); err != nil {
 		return diag.FromErr(fmt.Errorf("error setting ssh tunnel: %s", err))
 	}
 
@@ -363,14 +366,15 @@ func expandSSHTunnel(vSSHTunnel []interface{}) *meroxa.ResourceSSHTunnelInput {
 	return sshTunnel
 }
 
-func flattenSSHTunnel(sshTunnel *meroxa.ResourceSSHTunnel) []interface{} {
+func flattenSSHTunnel(sshTunnel *meroxa.ResourceSSHTunnel) map[string]interface{} {
 	if sshTunnel == nil {
 		return nil
 	}
 	c := make(map[string]interface{})
 	c["address"] = sshTunnel.Address
 	c["public_key"] = sshTunnel.PublicKey
-	return []interface{}{c}
+
+	return c
 }
 
 func validateURL() schema.SchemaValidateDiagFunc {
