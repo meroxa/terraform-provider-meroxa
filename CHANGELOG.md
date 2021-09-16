@@ -2,14 +2,14 @@
 
 BUG FIXES:
 
-* Ensure `private_key` attribute is submitted ([#17](https://github.com/hashicorp/terraform-provider-aws/issues/17))
+* Ensure `private_key` attribute is submitted ([#17](https://github.com/meroxa/terraform-provider-meroxa/issues/17))
 
 ## 1.1.0
 
 ENHANCEMENTS:
 
 * Add new `private_key` attribute to `meroxa_resource.ssh_tunnel`.
-Make attribute `address` on `meroxa_resource.ssh_tunnel` required. ([#11](https://github.com/hashicorp/terraform-provider-aws/issues/11))
+Make attribute `address` on `meroxa_resource.ssh_tunnel` required. ([#11](https://github.com/meroxa/terraform-provider-meroxa/issues/11))
 
 ## 0.1.0
 
