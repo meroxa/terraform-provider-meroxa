@@ -1,0 +1,3 @@
+```release-note:bug
+Ensure `private_key` attribute is submitted
+```

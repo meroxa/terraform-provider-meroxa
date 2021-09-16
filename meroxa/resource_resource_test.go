@@ -2,10 +2,11 @@ package meroxa
 
 import (
 	"context"
+	"crypto/x509"
+	"encoding/pem"
 	"fmt"
 	"log"
 	"net/url"
-	"regexp"
 	"strconv"
 	"strings"
 	"testing"
@@ -15,6 +16,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"github.com/joeshaw/envdecode"
+	"golang.org/x/crypto/ssh"
 )
 
 type TestsConfig struct {
@@ -107,10 +109,19 @@ func TestAccMeroxaResource_sshTunnel(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	// SSH public keys have a preamble with base64 encoded data following.
-	pubkeyRegex := regexp.MustCompile(
-		`^ssh-rsa (?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})$`,
-	)
+	b, _ := pem.Decode([]byte(Config.BastionKey))
+	if err != nil {
+		t.Error(err)
+	}
+	privKey, err := x509.ParsePKCS1PrivateKey(b.Bytes)
+	if err != nil {
+		t.Error(err)
+	}
+	pubKey, err := ssh.NewPublicKey(privKey.Public())
+	if err != nil {
+		t.Error(err)
+	}
+	sshPubKey := strings.TrimSuffix(string(ssh.MarshalAuthorizedKey(pubKey)), "\n")
 
 	testAccMeroxaResourceSSHTunnel := fmt.Sprintf(
 		`resource "meroxa_resource" "with_tunnel" {
@@ -139,7 +150,7 @@ func TestAccMeroxaResource_sshTunnel(t *testing.T) {
 					resource.TestCheckResourceAttr("meroxa_resource.with_tunnel", "type", "postgres"),
 					resource.TestCheckResourceAttr("meroxa_resource.with_tunnel", "url", privatePostgresURL),
 					resource.TestCheckResourceAttr("meroxa_resource.with_tunnel", "ssh_tunnel.0.address", bastionAddr),
-					resource.TestMatchResourceAttr("meroxa_resource.with_tunnel", "ssh_tunnel.0.public_key", pubkeyRegex),
+					resource.TestCheckResourceAttr("meroxa_resource.with_tunnel", "ssh_tunnel.0.public_key", sshPubKey),
 				),
 			},
 		},
