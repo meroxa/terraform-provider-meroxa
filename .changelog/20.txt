@@ -1,0 +1,5 @@
+```release-note:enhancement
+Enable state monitoring for connector and resource resources.
+Resource creation will error after 10 minutes timeout if the desired
+state has not been reached.
+```
