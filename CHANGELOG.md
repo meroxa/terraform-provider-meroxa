@@ -1,3 +1,11 @@
+## 1.3.0
+
+ENHANCEMENTS:
+
+* Enable state monitoring for connector and resource resources.
+Resource creation will error after 10 minutes timeout if the desired
+state has not been reached. ([#20](https://github.com/meroxa/terraform-provider-meroxa/issues/20))
+
 ## 1.2.0
 
 BUG FIXES:
