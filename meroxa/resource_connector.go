@@ -4,10 +4,21 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/meroxa/meroxa-go"
+)
+
+const (
+	ConnectorStatePending = "pending"
+	ConnectorStateRunning = "running"
+	ConnectorStatePaused  = "paused"
+	ConnectorStateCrashed = "crashed"
+	ConnectorStateFailed  = "failed"
+	ConnectorStateDOA     = "doa"
 )
 
 func resourceConnector() *schema.Resource {
@@ -163,6 +174,27 @@ func resourceConnectorCreate(ctx context.Context, d *schema.ResourceData, m inte
 	}
 
 	d.SetId(strconv.Itoa(conn.ID))
+
+	createStateConf := &resource.StateChangeConf{
+		Pending: []string{
+			ConnectorStatePending,
+		},
+		Target: []string{
+			ConnectorStateRunning,
+		},
+		Refresh:    resourceConnectorStateFunc(ctx, c, conn.ID),
+		Timeout:    10 * time.Minute,
+		Delay:      30 * time.Second,
+		MinTimeout: 30 * time.Second,
+	}
+
+	_, err = createStateConf.WaitForStateContext(ctx)
+	if err != nil {
+		return diag.FromErr(
+			fmt.Errorf("error waiting for connector (%s) to be created: %s", d.Id(), err),
+		)
+	}
+
 	resourceConnectorRead(ctx, d, m)
 
 	return diags
@@ -236,6 +268,17 @@ func resourceConnectorDelete(ctx context.Context, d *schema.ResourceData, m inte
 	}
 	d.SetId("")
 	return diags
+}
+
+func resourceConnectorStateFunc(ctx context.Context, c *meroxa.Client, id int) resource.StateRefreshFunc {
+	return func() (interface{}, string, error) {
+		resp, err := c.GetConnector(ctx, id)
+		if err != nil {
+			return nil, "", err
+		}
+
+		return resp, resp.State, nil
+	}
 }
 
 func flattenStreams(conn *meroxa.Connector) []interface{} {

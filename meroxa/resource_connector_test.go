@@ -43,6 +43,7 @@ func TestAccMeroxaConnector_basic(t *testing.T) {
 					testAccCheckMeroxaResourceExists("meroxa_connector.basic"),
 					resource.TestCheckResourceAttr("meroxa_connector.basic", "name", "connector-basic"),
 					resource.TestCheckResourceAttr("meroxa_connector.basic", "type", "jdbc-source"),
+					resource.TestCheckResourceAttr("meroxa_connector.basic", "state", "running"),
 				),
 			},
 		},
