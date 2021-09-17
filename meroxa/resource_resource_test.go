@@ -71,6 +71,7 @@ func TestAccMeroxaResource_basic(t *testing.T) {
 					resource.TestCheckResourceAttr("meroxa_resource.basic", "name", "resource-basic"),
 					resource.TestCheckResourceAttr("meroxa_resource.basic", "type", "postgres"),
 					resource.TestCheckResourceAttr("meroxa_resource.basic", "url", postgresqlURL),
+					resource.TestCheckResourceAttr("meroxa_resource.basic", "status", "ready"),
 				),
 			},
 		},
@@ -97,6 +98,7 @@ func TestAccMeroxaResource_inline(t *testing.T) {
 					resource.TestCheckResourceAttr("meroxa_resource.inline", "name", "inline"),
 					resource.TestCheckResourceAttr("meroxa_resource.inline", "type", "postgres"),
 					resource.TestCheckResourceAttr("meroxa_resource.inline", "url", postgresqlURL),
+					resource.TestCheckResourceAttr("meroxa_resource.inline", "status", "ready"),
 				),
 			},
 		},
@@ -104,7 +106,7 @@ func TestAccMeroxaResource_inline(t *testing.T) {
 }
 
 func TestAccMeroxaResource_sshTunnel(t *testing.T) {
-	bastionAddr := fmt.Sprintf("%s@%s", Config.BastionUser, Config.BastionHost)
+	bastionAddr := fmt.Sprintf("%s@%s:22", Config.BastionUser, Config.BastionHost)
 	privatePostgresURL, err := URLWithoutCredentials(Config.PrivatePostgresURL)
 	if err != nil {
 		t.Error(err)
@@ -149,6 +151,7 @@ func TestAccMeroxaResource_sshTunnel(t *testing.T) {
 					resource.TestCheckResourceAttr("meroxa_resource.with_tunnel", "name", "with_ssh_tunnel"),
 					resource.TestCheckResourceAttr("meroxa_resource.with_tunnel", "type", "postgres"),
 					resource.TestCheckResourceAttr("meroxa_resource.with_tunnel", "url", privatePostgresURL),
+					resource.TestCheckResourceAttr("meroxa_resource.with_tunnel", "status", "ready"),
 					resource.TestCheckResourceAttr("meroxa_resource.with_tunnel", "ssh_tunnel.0.address", bastionAddr),
 					resource.TestCheckResourceAttr("meroxa_resource.with_tunnel", "ssh_tunnel.0.public_key", sshPubKey),
 				),

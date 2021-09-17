@@ -6,11 +6,21 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"time"
+
+	"github.com/meroxa/meroxa-go"
 
 	"github.com/hashicorp/go-cty/cty"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/meroxa/meroxa-go"
+)
+
+const (
+	ResourceStatePending  = "pending"
+	ResourceStateStarting = "starting"
+	ResourceStateError    = "error"
+	ResourceStateReady    = "ready"
 )
 
 func resourceResource() *schema.Resource {
@@ -197,7 +207,26 @@ func resourceResourceCreate(ctx context.Context, d *schema.ResourceData, m inter
 		})
 	}
 
-	// should we wait for resource state?
+	createStateConf := &resource.StateChangeConf{
+		Pending: []string{
+			ResourceStatePending,
+			ResourceStateStarting,
+		},
+		Target: []string{
+			ResourceStateReady,
+		},
+		Refresh:    resourceResourceStateFunc(ctx, c, res.ID),
+		Timeout:    10 * time.Minute,
+		Delay:      30 * time.Second,
+		MinTimeout: 30 * time.Second,
+	}
+
+	_, err = createStateConf.WaitForStateContext(ctx)
+	if err != nil {
+		return diag.FromErr(
+			fmt.Errorf("error waiting for resource (%s) to be created: %s", d.Id(), err),
+		)
+	}
 
 	resourceResourceRead(ctx, d, m)
 
@@ -297,6 +326,16 @@ func resourceResourceDelete(ctx context.Context, d *schema.ResourceData, m inter
 	d.SetId("")
 
 	return diags
+}
+
+func resourceResourceStateFunc(ctx context.Context, c *meroxa.Client, id int) resource.StateRefreshFunc {
+	return func() (interface{}, string, error) {
+		resp, err := c.GetResource(ctx, id)
+		if err != nil {
+			return nil, "", err
+		}
+		return resp, resp.Status.State, nil
+	}
 }
 
 func expandCredentials(vCredentials []interface{}) *meroxa.Credentials {
