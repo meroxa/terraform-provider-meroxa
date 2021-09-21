@@ -156,6 +156,11 @@ func TestAccMeroxaResource_sshTunnel(t *testing.T) {
 					resource.TestCheckResourceAttr("meroxa_resource.with_tunnel", "ssh_tunnel.0.public_key", sshPubKey),
 				),
 			},
+			{
+				Config:             testAccMeroxaResourceSSHTunnel,
+				Check:              testAccCheckMeroxaResourceExists("meroxa_resource.with_tunnel"),
+				ExpectNonEmptyPlan: false,
+			},
 		},
 	})
 }

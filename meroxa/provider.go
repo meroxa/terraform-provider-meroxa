@@ -6,10 +6,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/meroxa/meroxa-go"
 	"golang.org/x/oauth2"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func init() {
@@ -32,11 +33,29 @@ func Provider(version string) func() *schema.Provider {
 	return func() *schema.Provider {
 		p := &schema.Provider{
 			Schema: map[string]*schema.Schema{
+				"auth_domain": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Sensitive:   false,
+					DefaultFunc: schema.EnvDefaultFunc("MEROXA_DOMAIN", nil),
+				},
+				"client_id": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Sensitive:   true,
+					DefaultFunc: schema.EnvDefaultFunc("MEROXA_CLIENT_ID", nil),
+				},
 				"access_token": {
 					Type:        schema.TypeString,
 					Required:    true,
 					Sensitive:   true,
 					DefaultFunc: schema.EnvDefaultFunc("MEROXA_ACCESS_TOKEN", nil),
+				},
+				"refresh_token": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Sensitive:   true,
+					DefaultFunc: schema.EnvDefaultFunc("MEROXA_REFRESH_TOKEN", nil),
 				},
 				"debug": {
 					Type:     schema.TypeBool,
@@ -83,6 +102,8 @@ func Provider(version string) func() *schema.Provider {
 func configure(version string) func(context.Context, *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	return func(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 		accessToken := d.Get("access_token").(string)
+		refreshToken := d.Get("refresh_token").(string)
+		oauth2Config := meroxa.DefaultOAuth2Config()
 
 		// Warning or errors can be collected in a slice type
 		var diags diag.Diagnostics
@@ -107,14 +128,23 @@ func configure(version string) func(context.Context, *schema.ResourceData) (inte
 			options = append(options, meroxa.WithBaseURL(apiURL.(string)))
 		}
 
+		if cID, ok := d.Get("client_id").(string); ok && cID != "" {
+			oauth2Config.ClientID = cID
+		}
+
+		if ad, ok := d.Get("auth_domain").(string); ok && ad != "" {
+			oauth2Config.Endpoint = oauth2.Endpoint{
+				AuthURL:  fmt.Sprintf("https://%s/authorize", ad),
+				TokenURL: fmt.Sprintf("https://%s/oauth/token", ad),
+			}
+		}
+
 		// WithAuthentication needs to be added after WithDumpTransport
 		// to catch requests to auth0
 		options = append(options, meroxa.WithAuthentication(
-			&oauth2.Config{
-				Endpoint: meroxa.OAuth2Endpoint,
-			},
+			oauth2Config,
 			accessToken,
-			"",
+			refreshToken,
 		))
 
 		c, err := meroxa.New(options...)

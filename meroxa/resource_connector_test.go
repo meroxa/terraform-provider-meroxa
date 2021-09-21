@@ -77,6 +77,64 @@ func TestAccMeroxaConnector_WithoutPipeline(t *testing.T) {
 	})
 }
 
+func TestAccMeroxaConnector_WithConfig(t *testing.T) {
+	testAccMeroxaConnectionWithConfig := func(k, v string) string {
+		return fmt.Sprintf(`
+			resource "meroxa_resource" "connector_test" {
+	  			name = "connector-inline"
+	  			type = "postgres"
+	  			url = "%s"
+			}
+			resource "meroxa_pipeline" "connector_test" {
+	  			name = "connector-test"
+			}
+			resource "meroxa_connector" "with_config" {
+				name = "connector-basic"
+				pipeline_id = meroxa_pipeline.connector_test.id
+        		source_id = meroxa_resource.connector_test.id
+        		input = "public"
+        		config = {
+        			%q = %q
+        		}
+			}
+		`, os.Getenv("MEROXA_POSTGRES_URL"), k, v)
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckMeroxaConnectorDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccMeroxaConnectionWithConfig("key1", "val1"),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckMeroxaResourceExists("meroxa_connector.with_config"),
+					resource.TestCheckResourceAttr("meroxa_connector.with_config", "name", "connector-basic"),
+					resource.TestCheckResourceAttr("meroxa_connector.with_config", "type", "jdbc-source"),
+					resource.TestCheckResourceAttr("meroxa_connector.with_config", "state", "running"),
+					resource.TestCheckResourceAttr("meroxa_connector.with_config", "config.key1", "val1"),
+				),
+			},
+			{
+				Config:             testAccMeroxaConnectionWithConfig("key1", "val1"),
+				Check:              testAccCheckMeroxaResourceExists("meroxa_connector.with_config"),
+				ExpectNonEmptyPlan: false,
+				PlanOnly:           true,
+			},
+			{
+				Config: testAccMeroxaConnectionWithConfig("key1", "val2"),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckMeroxaResourceExists("meroxa_connector.with_config"),
+					resource.TestCheckResourceAttr("meroxa_connector.with_config", "name", "connector-basic"),
+					resource.TestCheckResourceAttr("meroxa_connector.with_config", "type", "jdbc-source"),
+					resource.TestCheckResourceAttr("meroxa_connector.with_config", "state", "running"),
+					resource.TestCheckResourceAttr("meroxa_connector.with_config", "config.key1", "val2"),
+				),
+			},
+		},
+	})
+}
+
 func testAccCheckMeroxaConnectorDestroy(s *terraform.State) error {
 	c := testAccProvider.Meta().(*meroxa.Client)
 
