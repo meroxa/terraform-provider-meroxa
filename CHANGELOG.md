@@ -1,3 +1,13 @@
+## 1.4.0
+
+ENHANCEMENTS:
+
+* Add support for optional `refresh_token` to help renew an expired `access_token`. ([#21](https://github.com/meroxa/terraform-provider-meroxa/issues/21))
+
+BUG FIXES:
+
+* Fix `config` attribute handling in the connector resource ([#21](https://github.com/meroxa/terraform-provider-meroxa/issues/21))
+
 ## 1.3.0
 
 ENHANCEMENTS:
