@@ -47,5 +47,8 @@ provider "meroxa" {
 ### Optional
 
 - **api_url** (String)
+- **auth_domain** (String)
+- **client_id** (String, Sensitive)
 - **debug** (Boolean)
+- **refresh_token** (String, Sensitive)
 - **timeout** (Number)

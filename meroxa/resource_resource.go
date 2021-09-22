@@ -172,16 +172,14 @@ func resourceResourceCreate(ctx context.Context, d *schema.ResourceData, m inter
 	c := m.(*meroxa.Client)
 
 	input := meroxa.CreateResourceInput{
-		Type: d.Get("type").(string),
-		Name: d.Get("name").(string),
-		URL:  d.Get("url").(string),
-	}
-	if v, ok := d.GetOk("credentials"); ok {
-		input.Credentials = expandCredentials(v.([]interface{}))
+		Type:     d.Get("type").(string),
+		Name:     d.Get("name").(string),
+		URL:      d.Get("url").(string),
+		Metadata: resourceMetadata(d),
 	}
 
-	if v, ok := d.GetOk("metadata"); ok {
-		input.Metadata = v.(map[string]interface{})
+	if v, ok := d.GetOk("credentials"); ok {
+		input.Credentials = expandCredentials(v.([]interface{}))
 	}
 
 	if v, ok := d.GetOk("ssh_tunnel"); ok {
@@ -283,11 +281,9 @@ func resourceResourceUpdate(ctx context.Context, d *schema.ResourceData, m inter
 	c := m.(*meroxa.Client)
 
 	req := meroxa.UpdateResourceInput{
-		Name: d.Get("name").(string),
-		URL:  d.Get("url").(string),
-	}
-	if d.HasChange("metadata") {
-		req.Metadata = d.Get("metadata").(map[string]interface{})
+		Name:     d.Get("name").(string),
+		URL:      d.Get("url").(string),
+		Metadata: resourceMetadata(d),
 	}
 
 	if d.HasChange("credentials") {
@@ -336,6 +332,14 @@ func resourceResourceStateFunc(ctx context.Context, c *meroxa.Client, id int) re
 		}
 		return resp, resp.Status.State, nil
 	}
+}
+
+func resourceMetadata(d *schema.ResourceData) map[string]interface{} {
+	m := make(map[string]interface{})
+	for k, v := range d.Get("metadata").(map[string]interface{}) {
+		m[k] = v
+	}
+	return m
 }
 
 func expandCredentials(vCredentials []interface{}) *meroxa.Credentials {

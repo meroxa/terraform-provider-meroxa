@@ -122,26 +122,17 @@ func resourceConnectorCreate(ctx context.Context, d *schema.ResourceData, m inte
 
 	c := m.(*meroxa.Client)
 	input := meroxa.CreateConnectorInput{
-		Name:       d.Get("name").(string),
-		ResourceID: resourceID,
+		Name:          d.Get("name").(string),
+		ResourceID:    resourceID,
+		Configuration: resourceConnectorConfig(d),
 	}
+
 	if v, ok := d.GetOk("pipeline_id"); ok {
 		input.PipelineID = v.(int)
 	}
 
 	if v, ok := d.GetOk("pipeline_name"); ok {
 		input.PipelineName = v.(string)
-	}
-
-	if v, ok := d.GetOk("config"); ok {
-		input.Configuration = v.(map[string]interface{})
-	}
-
-	if v, ok := d.GetOk("input"); ok {
-		if input.Configuration == nil {
-			input.Configuration = make(map[string]interface{})
-		}
-		input.Configuration["input"] = v.(string)
 	}
 
 	if v, ok := d.GetOk("metadata"); ok {
@@ -166,6 +157,7 @@ func resourceConnectorCreate(ctx context.Context, d *schema.ResourceData, m inte
 		}
 		input.Metadata["mx:connectorType"] = "destination"
 	}
+
 	input.ResourceID = resourceID
 
 	conn, err := c.CreateConnector(ctx, input)
@@ -219,8 +211,8 @@ func resourceConnectorRead(ctx context.Context, d *schema.ResourceData, m interf
 
 	_ = d.Set("type", conn.Type)
 	_ = d.Set("name", conn.Name)
-	_ = d.Set("config", conn.Configuration)
 	_ = d.Set("metadata", conn.Metadata)
+
 	err = d.Set("streams", flattenStreams(conn))
 	if err != nil {
 		return diag.FromErr(fmt.Errorf("error setting streams: %s", err))
@@ -229,20 +221,31 @@ func resourceConnectorRead(ctx context.Context, d *schema.ResourceData, m interf
 	_ = d.Set("pipeline_id", conn.PipelineID)
 	_ = d.Set("pipeline_name", conn.PipelineName)
 
+	// N.B. Configuration is write-only attribute where the platform API
+	//      returns empty map. Configuration is persisted in the state only.
+	// _ = d.Set("config", conn.Configuration)
+
 	return diags
 }
 
 func resourceConnectorUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
-	var state string
 	c := m.(*meroxa.Client)
 
 	name := d.Get("name").(string)
 	if d.HasChange("state") {
-		state = d.Get("state").(string)
-		_, err := c.UpdateConnectorStatus(ctx, name, state)
-		if err != nil {
+		state := d.Get("state").(string)
+		if _, err := c.UpdateConnectorStatus(ctx, name, state); err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
+	if d.HasChange("config") {
+		input := meroxa.UpdateConnectorInput{
+			Configuration: resourceConnectorConfig(d),
+		}
+		if _, err := c.UpdateConnector(ctx, name, input); err != nil {
 			return diag.FromErr(err)
 		}
 	}
@@ -287,4 +290,19 @@ func flattenStreams(conn *meroxa.Connector) []interface{} {
 	s["output"] = conn.Streams["output"]
 	s["input"] = conn.Streams["input"]
 	return []interface{}{s}
+}
+
+func resourceConnectorConfig(d *schema.ResourceData) map[string]interface{} {
+	config := make(map[string]interface{})
+
+	if v, ok := d.GetOk("config"); ok {
+		for k, v := range v.(map[string]interface{}) {
+			config[k] = v
+		}
+	}
+	if v, ok := d.GetOk("input"); ok {
+		config["input"] = v.(string)
+	}
+
+	return config
 }

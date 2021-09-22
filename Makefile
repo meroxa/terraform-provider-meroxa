@@ -35,16 +35,16 @@ install: build
 
 test:
 	go test -i $(TEST) || exit 1
-	echo $(TEST) | xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4
+	echo $(TEST) | xargs -t -n4 go test -p 1 -count=1 $(TESTARGS) -timeout=30s -parallel=4
 
 # Run acceptance tests
 .PHONY: testacc
 testacc:
-	TF_ACC=1 go test ./... -v $(TESTARGS) -timeout 120m
+	TF_ACC=1 go test -p 1 -count=1 ./... -v $(TESTARGS) -timeout 120m
 
 .PHONY: testacc
 testacc-ci:
-	TF_ACC=1 go test -json ./... -v $(TESTARGS) -timeout 120m > test.json
+	TF_ACC=1 go test -p 1 -count=1 -json ./... -v $(TESTARGS) -timeout 120m > test.json
 
 
 .PHONY: vet
