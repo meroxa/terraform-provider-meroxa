@@ -1,0 +1,6 @@
+```release-note:bug
+Fix `config` attribute handling in the connector resource
+```
+```release-note:enhancement
+Add support for optional `refresh_token` to help renew an expired `access_token`.
+```
