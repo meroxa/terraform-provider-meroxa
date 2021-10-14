@@ -12,10 +12,10 @@ TARGET_SHA=$(git rev-parse HEAD)
 PREVIOUS_RELEASE_TAG=$(git describe --abbrev=0 --match='v*.*.*' --tags)
 PREVIOUS_RELEASE_SHA=$(git rev-list -n 1 $PREVIOUS_RELEASE_TAG)
 
-if [ $TARGET_SHA == $PREVIOUS_RELEASE_SHA ]; then
-  echo "Nothing to do"
-  exit 0
-fi
+# if [ $TARGET_SHA == $PREVIOUS_RELEASE_SHA ]; then
+#   echo "Nothing to do"
+#   exit 0
+# fi
 
 PREVIOUS_CHANGELOG=$(sed -n -e "/# ${PREVIOUS_RELEASE_TAG#v}/,\$p" $__parent/$CHANGELOG_FILE_NAME)
 
