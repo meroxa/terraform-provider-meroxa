@@ -1,6 +1,8 @@
 name: Generate CHANGELOG
 on:
-  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
 jobs:
   GenerateChangelog:
     runs-on: ubuntu-latest
@@ -12,7 +14,7 @@ jobs:
       - run: ./scripts/generate-changelog.sh
       - run: |
           if [[ `git status --porcelain` ]]; then
-            if ${{github.event_name == 'workflow_dispatch'}}; then
+            if ${{github.gevent_name == 'workflow_dispatch'}}; then
               MSG="Update CHANGELOG.md (Manual Trigger)"
             else
               MSG="Update CHANGELOG.md for #${{ github.event.pull_request.number }}"
@@ -21,5 +23,5 @@ jobs:
             git config --local user.name changelogbot
             git add CHANGELOG.md
             git commit -m "$MSG"
-            git push
+            git push origin HEAD:main
           fi

@@ -1,3 +1,0 @@
-``` release-note:testing
-adding some text here for reference
-```
