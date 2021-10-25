@@ -1,6 +1,8 @@
 name: Generate CHANGELOG
 on:
-  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
 jobs:
   GenerateChangelog:
     runs-on: ubuntu-latest
@@ -21,5 +23,5 @@ jobs:
             git config --local user.name changelogbot
             git add CHANGELOG.md
             git commit -m "$MSG"
-            git push
+            git push origin HEAD:main
           fi

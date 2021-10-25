@@ -1,4 +1,4 @@
-## 1.4.0
+## v1.4.0
 
 ENHANCEMENTS:
 
@@ -8,7 +8,7 @@ BUG FIXES:
 
 * Fix `config` attribute handling in the connector resource ([#21](https://github.com/meroxa/terraform-provider-meroxa/issues/21))
 
-## 1.3.0
+## v1.3.0
 
 ENHANCEMENTS:
 
@@ -16,20 +16,20 @@ ENHANCEMENTS:
 Resource creation will error after 10 minutes timeout if the desired
 state has not been reached. ([#20](https://github.com/meroxa/terraform-provider-meroxa/issues/20))
 
-## 1.2.0
+## v1.2.0
 
 BUG FIXES:
 
 * Ensure `private_key` attribute is submitted ([#17](https://github.com/meroxa/terraform-provider-meroxa/issues/17))
 
-## 1.1.0
+## v1.1.0
 
 ENHANCEMENTS:
 
 * Add new `private_key` attribute to `meroxa_resource.ssh_tunnel`.
 Make attribute `address` on `meroxa_resource.ssh_tunnel` required. ([#11](https://github.com/meroxa/terraform-provider-meroxa/issues/11))
 
-## 0.1.0
+## v0.1.0
 
 FEATURES:
 
