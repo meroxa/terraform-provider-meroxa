@@ -45,12 +45,12 @@ jobs:
       - name: Run Terraform Provider Acceptance tests
         working-directory: ./provider
         env:
-          AUTH0_CLIENT_ID: ${{ secrets.AUTH0_ACCEPTANCE_STAGING_CLIENT_ID }}
-          AUTH0_DOMAIN: ${{ secrets.AUTH0_STAGING_DOMAIN }}
-          AUTH0_AUDIENCE: ${{ secrets.AUTH0_STAGING_AUDIENCE }}
-          AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_ACCEPTANCE_STAGING_CLIENT_SECRET }}
-          AUTH0_PASSWORD: ${{ secrets.AUTH0_PASSWORD }}
-          AUTH0_USERNAME: ${{ secrets.AUTH0_USERNAME }}
+          MEROXA_AUTH_CLIENT_ID: ${{ secrets.AUTH0_ACCEPTANCE_STAGING_CLIENT_ID }}
+          MEROXA_AUTH_DOMAIN: ${{ secrets.AUTH0_STAGING_DOMAIN }}
+          MEROXA_AUTH_AUDIENCE: ${{ secrets.AUTH0_STAGING_AUDIENCE }}
+          MEROXA_AUTH_CLIENT_SECRET: ${{ secrets.AUTH0_ACCEPTANCE_STAGING_CLIENT_SECRET }}
+          MEROXA_AUTH_PASSWORD: ${{ secrets.AUTH0_PASSWORD }}
+          MEROXA_AUTH_USERNAME: ${{ secrets.AUTH0_USERNAME }}
           MEROXA_POSTGRES_URL: ${{ secrets.TEST_DB_URL }}
           MEROXA_BASTION_HOST: ${{ secrets.TEST_BASTION_URL }}
           MEROXA_BASTION_KEY: ${{ secrets.TEST_BASTION_PRIVATE_KEY }}
@@ -59,15 +59,15 @@ jobs:
         run: |
           export MEROXA_API_URL="https://api.staging.meroxa.io/v1"
           export MEROXA_ACCESS_TOKEN=$(curl -s --request POST \
-            --url 'https://'"$AUTH0_DOMAIN"'/oauth/token' \
+            --url 'https://'"$MEROXA_AUTH_DOMAIN"'/oauth/token' \
             --header 'content-type: application/x-www-form-urlencoded' \
             --data grant_type=password \
-            --data username=$AUTH0_USERNAME \
-            --data password=$AUTH0_PASSWORD \
-            --data audience=$AUTH0_AUDIENCE \
+            --data username=$MEROXA_AUTH_USERNAME \
+            --data password=$MEROXA_AUTH_PASSWORD \
+            --data audience=$MEROXA_AUTH_AUDIENCE \
             --data scope=user \
-            --data 'client_id='"$AUTH0_CLIENT_ID"'' \
-            --data client_secret=$AUTH0_CLIENT_SECRET | jq -r .access_token)
+            --data 'client_id='"$MEROXA_AUTH_CLIENT_ID"'' \
+            --data client_secret=$MEROXA_AUTH_CLIENT_SECRET | jq -r .access_token)
           make testacc-ci
 
       - name: Annotate tests
