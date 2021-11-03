@@ -7,7 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 func TestAccMeroxaPipeline_basic(t *testing.T) {
@@ -33,7 +33,7 @@ func TestAccMeroxaPipeline_basic(t *testing.T) {
 }
 
 func testAccCheckMeroxaPipelineDestroy(s *terraform.State) error {
-	c := testAccProvider.Meta().(*meroxa.Client)
+	c := testAccProvider.Meta().(meroxa.Client)
 
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "meroxa_pipeline" {

@@ -6,7 +6,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 func dataSourcePipeline() *schema.Resource {
@@ -44,7 +44,7 @@ func dataSourcePipelineRead(ctx context.Context, d *schema.ResourceData, m inter
 	var p *meroxa.Pipeline
 	var err error
 
-	c := m.(*meroxa.Client)
+	c := m.(meroxa.Client)
 
 	if v, ok := d.GetOk("name"); ok && v.(string) != "" {
 		p, err = c.GetPipelineByName(ctx, v.(string))
@@ -56,7 +56,6 @@ func dataSourcePipelineRead(ctx context.Context, d *schema.ResourceData, m inter
 	_ = d.Set("id", strconv.Itoa(p.ID))
 	_ = d.Set("name", p.Name)
 	_ = d.Set("state", p.State)
-	_ = d.Set("metadata", p.Metadata)
 
 	return diags
 }

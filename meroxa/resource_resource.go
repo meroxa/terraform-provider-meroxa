@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 
 	"github.com/hashicorp/go-cty/cty"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -169,10 +169,10 @@ func resourceResourceCreate(ctx context.Context, d *schema.ResourceData, m inter
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	c := m.(*meroxa.Client)
+	c := m.(meroxa.Client)
 
-	input := meroxa.CreateResourceInput{
-		Type:     d.Get("type").(string),
+	input := &meroxa.CreateResourceInput{
+		Type:     d.Get("type").(meroxa.ResourceType),
 		Name:     d.Get("name").(string),
 		URL:      d.Get("url").(string),
 		Metadata: resourceMetadata(d),
@@ -186,7 +186,7 @@ func resourceResourceCreate(ctx context.Context, d *schema.ResourceData, m inter
 		input.SSHTunnel = expandSSHTunnel(v.([]interface{}))
 	}
 
-	res, err := c.CreateResource(ctx, &input)
+	res, err := c.CreateResource(ctx, input)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -207,8 +207,8 @@ func resourceResourceCreate(ctx context.Context, d *schema.ResourceData, m inter
 
 	createStateConf := &resource.StateChangeConf{
 		Pending: []string{
-			ResourceStatePending,
-			ResourceStateStarting,
+			string(meroxa.ResourceStatePending),
+			string(meroxa.ResourceStateStarting),
 		},
 		Target: []string{
 			ResourceStateReady,
@@ -235,7 +235,7 @@ func resourceResourceRead(ctx context.Context, d *schema.ResourceData, m interfa
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	c := m.(*meroxa.Client)
+	c := m.(meroxa.Client)
 
 	rID := d.Id()
 	id, err := strconv.Atoi(rID)
@@ -278,22 +278,22 @@ func resourceResourceUpdate(ctx context.Context, d *schema.ResourceData, m inter
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	c := m.(*meroxa.Client)
+	c := m.(meroxa.Client)
 
-	req := meroxa.UpdateResourceInput{
+	input := &meroxa.UpdateResourceInput{
 		Name:     d.Get("name").(string),
 		URL:      d.Get("url").(string),
 		Metadata: resourceMetadata(d),
 	}
 
 	if d.HasChange("credentials") {
-		req.Credentials = expandCredentials(d.Get("credentials").([]interface{}))
+		input.Credentials = expandCredentials(d.Get("credentials").([]interface{}))
 	}
 	if d.HasChange("ssh_tunnel") {
-		req.SSHTunnel = expandSSHTunnel(d.Get("ssh_tunnel").([]interface{}))
+		input.SSHTunnel = expandSSHTunnel(d.Get("ssh_tunnel").([]interface{}))
 	}
-	log.Printf("[DEBUG] Updating meroxa resource: %v", req)
-	_, err := c.UpdateResource(ctx, req.Name, req)
+	log.Printf("[DEBUG] Updating meroxa resource: %v", input)
+	_, err := c.UpdateResource(ctx, input.Name, input)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -305,7 +305,7 @@ func resourceResourceDelete(ctx context.Context, d *schema.ResourceData, m inter
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	c := m.(*meroxa.Client)
+	c := m.(meroxa.Client)
 
 	dID := d.Id()
 	rID, err := strconv.Atoi(dID)
@@ -324,13 +324,13 @@ func resourceResourceDelete(ctx context.Context, d *schema.ResourceData, m inter
 	return diags
 }
 
-func resourceResourceStateFunc(ctx context.Context, c *meroxa.Client, id int) resource.StateRefreshFunc {
+func resourceResourceStateFunc(ctx context.Context, c meroxa.Client, id int) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
 		resp, err := c.GetResource(ctx, id)
 		if err != nil {
 			return nil, "", err
 		}
-		return resp, resp.Status.State, nil
+		return resp, string(resp.Status.State), nil
 	}
 }
 

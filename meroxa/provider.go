@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"golang.org/x/oauth2"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"

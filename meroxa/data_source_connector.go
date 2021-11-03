@@ -7,7 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 func dataSourceConnector() *schema.Resource {
@@ -100,7 +100,7 @@ func dataSourceConnectorRead(ctx context.Context, d *schema.ResourceData, m inte
 	var conn *meroxa.Connector
 	var err error
 
-	c := m.(*meroxa.Client)
+	c := m.(meroxa.Client)
 
 	if v, ok := d.GetOk("name"); ok && v.(string) != "" {
 		conn, err = c.GetConnectorByName(ctx, v.(string))

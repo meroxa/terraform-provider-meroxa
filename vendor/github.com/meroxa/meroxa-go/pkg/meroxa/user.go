@@ -18,10 +18,11 @@ type User struct {
 	FamilyName string    `json:"family_name,omitempty"`
 	Verified   bool      `json:"email_verified,omitempty"`
 	LastLogin  time.Time `json:"last_login,omitempty"`
+	Features   []string  `json:"features,omitempty"`
 }
 
 // GetUser returns a User with
-func (c *Client) GetUser(ctx context.Context) (*User, error) {
+func (c *client) GetUser(ctx context.Context) (*User, error) {
 	path := fmt.Sprintf("%s/me", usersPath)
 
 	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil)

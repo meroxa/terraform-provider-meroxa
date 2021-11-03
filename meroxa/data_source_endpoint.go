@@ -5,7 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 func dataSourceEndpoint() *schema.Resource {
@@ -64,7 +64,7 @@ func dataSourceEndpointRead(ctx context.Context, d *schema.ResourceData, m inter
 	var e *meroxa.Endpoint
 	var err error
 
-	c := m.(*meroxa.Client)
+	c := m.(meroxa.Client)
 
 	if v, ok := d.GetOk("name"); ok && v.(string) != "" {
 		e, err = c.GetEndpoint(ctx, v.(string))

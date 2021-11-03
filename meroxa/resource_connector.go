@@ -9,16 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/meroxa/meroxa-go"
-)
-
-const (
-	ConnectorStatePending = "pending"
-	ConnectorStateRunning = "running"
-	ConnectorStatePaused  = "paused"
-	ConnectorStateCrashed = "crashed"
-	ConnectorStateFailed  = "failed"
-	ConnectorStateDOA     = "doa"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 func resourceConnector() *schema.Resource {
@@ -120,8 +111,8 @@ func resourceConnectorCreate(ctx context.Context, d *schema.ResourceData, m inte
 	var resourceID int
 	var err error
 
-	c := m.(*meroxa.Client)
-	input := meroxa.CreateConnectorInput{
+	c := m.(meroxa.Client)
+	input := &meroxa.CreateConnectorInput{
 		Name:          d.Get("name").(string),
 		ResourceID:    resourceID,
 		Configuration: resourceConnectorConfig(d),
@@ -169,10 +160,10 @@ func resourceConnectorCreate(ctx context.Context, d *schema.ResourceData, m inte
 
 	createStateConf := &resource.StateChangeConf{
 		Pending: []string{
-			ConnectorStatePending,
+			string(meroxa.ConnectorStatePending),
 		},
 		Target: []string{
-			ConnectorStateRunning,
+			string(meroxa.ConnectorStateRunning),
 		},
 		Refresh:    resourceConnectorStateFunc(ctx, c, conn.ID),
 		Timeout:    10 * time.Minute,
@@ -196,7 +187,7 @@ func resourceConnectorRead(ctx context.Context, d *schema.ResourceData, m interf
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	c := m.(*meroxa.Client)
+	c := m.(meroxa.Client)
 
 	cID := d.Id()
 	id, err := strconv.Atoi(cID)
@@ -231,18 +222,18 @@ func resourceConnectorRead(ctx context.Context, d *schema.ResourceData, m interf
 func resourceConnectorUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
-	c := m.(*meroxa.Client)
+	c := m.(meroxa.Client)
 
 	name := d.Get("name").(string)
 	if d.HasChange("state") {
 		state := d.Get("state").(string)
-		if _, err := c.UpdateConnectorStatus(ctx, name, state); err != nil {
+		if _, err := c.UpdateConnectorStatus(ctx, name, meroxa.Action(state)); err != nil {
 			return diag.FromErr(err)
 		}
 	}
 
 	if d.HasChange("config") {
-		input := meroxa.UpdateConnectorInput{
+		input := &meroxa.UpdateConnectorInput{
 			Configuration: resourceConnectorConfig(d),
 		}
 		if _, err := c.UpdateConnector(ctx, name, input); err != nil {
@@ -258,7 +249,7 @@ func resourceConnectorUpdate(ctx context.Context, d *schema.ResourceData, m inte
 func resourceConnectorDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
-	c := m.(*meroxa.Client)
+	c := m.(meroxa.Client)
 	rID := d.Id()
 	id, err := strconv.Atoi(rID)
 	if err != nil {
@@ -273,14 +264,14 @@ func resourceConnectorDelete(ctx context.Context, d *schema.ResourceData, m inte
 	return diags
 }
 
-func resourceConnectorStateFunc(ctx context.Context, c *meroxa.Client, id int) resource.StateRefreshFunc {
+func resourceConnectorStateFunc(ctx context.Context, c meroxa.Client, id int) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
 		resp, err := c.GetConnector(ctx, id)
 		if err != nil {
 			return nil, "", err
 		}
 
-		return resp, resp.State, nil
+		return resp, string(resp.State), nil
 	}
 }
 

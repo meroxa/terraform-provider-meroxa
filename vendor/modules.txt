@@ -284,9 +284,9 @@ github.com/klauspost/compress/zstd/internal/xxhash
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.12
 github.com/mattn/go-isatty
-# github.com/meroxa/meroxa-go v0.0.0-20210903151302-d7ef8814cfca
+# github.com/meroxa/meroxa-go v0.0.0-20210903151302-d7ef8814cfca => github.com/meroxa/meroxa-go v0.0.0-20211103174619-a4d6f2b7ebb5
 ## explicit
-github.com/meroxa/meroxa-go
+github.com/meroxa/meroxa-go/pkg/meroxa
 # github.com/mitchellh/cli v1.1.2
 github.com/mitchellh/cli
 # github.com/mitchellh/copystructure v1.2.0
@@ -543,3 +543,4 @@ google.golang.org/protobuf/types/known/timestamppb
 google.golang.org/protobuf/types/pluginpb
 # gopkg.in/warnings.v0 v0.1.2
 gopkg.in/warnings.v0
+# github.com/meroxa/meroxa-go => github.com/meroxa/meroxa-go v0.0.0-20211103174619-a4d6f2b7ebb5

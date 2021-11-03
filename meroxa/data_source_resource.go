@@ -7,7 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 func dataSourceResource() *schema.Resource {
@@ -123,7 +123,7 @@ func dataSourceResource() *schema.Resource {
 }
 
 func dataSourceResourceRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	c := m.(*meroxa.Client)
+	c := m.(meroxa.Client)
 
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics

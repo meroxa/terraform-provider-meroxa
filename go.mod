@@ -18,3 +18,5 @@ require (
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 )
+
+replace github.com/meroxa/meroxa-go => github.com/meroxa/meroxa-go v0.0.0-20211103174619-a4d6f2b7ebb5
