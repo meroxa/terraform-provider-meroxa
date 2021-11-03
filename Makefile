@@ -40,12 +40,15 @@ test:
 # Run acceptance tests
 .PHONY: testacc
 testacc:
-	TF_ACC=1 go test -p 1 -count=1 ./... -v $(TESTARGS) -timeout 120m
+	code=$(shell TF_ACC=1 go test -p 1 -count=1 ./... -v $(TESTARGS) -timeout 120m > test.json; echo $$?)
+	echo "JSON:\r\t$(shell cat test.json)"
+	exit $(code)
 
 .PHONY: testacc
 testacc-ci:
-	TF_ACC=1 go test -p 1 -count=1 -json ./... -v $(TESTARGS) -timeout 120m > test.json
-
+	code=$(shell TF_ACC=1 go test -p 1 -count=1 -json ./... -v $(TESTARGS) -timeout 120m > test.json; echo $$?)
+	echo "JSON:\r\t$(shell cat test.json)"
+	exit $(code)
 
 .PHONY: vet
 vet:
