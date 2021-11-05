@@ -106,7 +106,7 @@ func resourceEndpointRead(ctx context.Context, d *schema.ResourceData, m interfa
 		return diag.FromErr(err)
 	}
 
-	_ = d.Set("protocol", e.Protocol)
+	_ = d.Set("protocol", string(e.Protocol))
 	_ = d.Set("stream", e.Stream)
 	_ = d.Set("ready", e.Ready)
 	_ = d.Set("host", e.Host)

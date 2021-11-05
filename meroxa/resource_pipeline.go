@@ -20,19 +20,11 @@ func resourcePipeline() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "Pipeline name",
 				Required:    true,
-				ForceNew:    true,
 			},
 			"state": {
 				Type:        schema.TypeString,
 				Description: "Pipeline state",
 				Computed:    true,
-			},
-			"metadata": {
-				Type:        schema.TypeMap,
-				Description: "Pipeline metadata",
-				Optional:    true,
-				Computed:    true,
-				Elem:        schema.TypeString,
 			},
 		},
 		Importer: &schema.ResourceImporter{

@@ -28,11 +28,6 @@ func dataSourcePipeline() *schema.Resource {
 				Description: "Pipeline state",
 				Computed:    true,
 			},
-			"metadata": {
-				Type:        schema.TypeMap,
-				Description: "Pipeline metadata",
-				Computed:    true,
-			},
 		},
 	}
 }
@@ -55,7 +50,7 @@ func dataSourcePipelineRead(ctx context.Context, d *schema.ResourceData, m inter
 
 	_ = d.Set("id", strconv.Itoa(p.ID))
 	_ = d.Set("name", p.Name)
-	_ = d.Set("state", p.State)
+	_ = d.Set("state", string(p.State))
 
 	return diags
 }

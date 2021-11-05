@@ -70,13 +70,6 @@ func resourceConnector() *schema.Resource {
 				Optional:    true,
 				Elem:        schema.TypeString,
 			},
-			"metadata": {
-				Type:        schema.TypeMap,
-				Description: "Connector metadata",
-				Optional:    true,
-				Computed:    true,
-				Elem:        schema.TypeString,
-			},
 			"pipeline_id": {
 				Type:        schema.TypeInt,
 				Description: "Connector's Pipeline ID",
@@ -126,19 +119,12 @@ func resourceConnectorCreate(ctx context.Context, d *schema.ResourceData, m inte
 		input.PipelineName = v.(string)
 	}
 
-	if v, ok := d.GetOk("metadata"); ok {
-		input.Metadata = v.(map[string]interface{})
-	} else {
-		meta := make(map[string]interface{})
-		input.Metadata = meta
-	}
-
 	if v, ok := d.GetOk("source_id"); ok && v.(string) != "" {
 		resourceID, err = strconv.Atoi(v.(string))
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		input.Metadata["mx:connectorType"] = "source"
+		input.Type = meroxa.ConnectorTypeSource
 	}
 
 	if v, ok := d.GetOk("destination_id"); ok && v.(string) != "" {
@@ -146,7 +132,11 @@ func resourceConnectorCreate(ctx context.Context, d *schema.ResourceData, m inte
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		input.Metadata["mx:connectorType"] = "destination"
+		input.Type = meroxa.ConnectorTypeDestination
+	}
+
+	if v, ok := d.GetOk("input"); ok && v.(string) != "" {
+		input.Input = v.(string)
 	}
 
 	input.ResourceID = resourceID
@@ -195,20 +185,19 @@ func resourceConnectorRead(ctx context.Context, d *schema.ResourceData, m interf
 		return diag.FromErr(err)
 	}
 
-	conn, err := c.GetConnector(ctx, id)
+	conn, err := c.GetConnectorByNameOrID(ctx, fmt.Sprint(id))
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	_ = d.Set("type", conn.Type)
+	_ = d.Set("type", string(conn.Type))
 	_ = d.Set("name", conn.Name)
-	_ = d.Set("metadata", conn.Metadata)
 
 	err = d.Set("streams", flattenStreams(conn))
 	if err != nil {
 		return diag.FromErr(fmt.Errorf("error setting streams: %s", err))
 	}
-	_ = d.Set("state", conn.State)
+	_ = d.Set("state", string(conn.State))
 	_ = d.Set("pipeline_id", conn.PipelineID)
 	_ = d.Set("pipeline_name", conn.PipelineName)
 
@@ -256,7 +245,7 @@ func resourceConnectorDelete(ctx context.Context, d *schema.ResourceData, m inte
 		return diag.FromErr(err)
 	}
 
-	err = c.DeleteConnector(ctx, id)
+	err = c.DeleteConnector(ctx, fmt.Sprint(id))
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -266,7 +255,7 @@ func resourceConnectorDelete(ctx context.Context, d *schema.ResourceData, m inte
 
 func resourceConnectorStateFunc(ctx context.Context, c meroxa.Client, id int) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
-		resp, err := c.GetConnector(ctx, id)
+		resp, err := c.GetConnectorByNameOrID(ctx, fmt.Sprint(id))
 		if err != nil {
 			return nil, "", err
 		}
@@ -290,9 +279,6 @@ func resourceConnectorConfig(d *schema.ResourceData) map[string]interface{} {
 		for k, v := range v.(map[string]interface{}) {
 			config[k] = v
 		}
-	}
-	if v, ok := d.GetOk("input"); ok {
-		config["input"] = v.(string)
 	}
 
 	return config

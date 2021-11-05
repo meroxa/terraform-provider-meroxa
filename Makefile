@@ -40,9 +40,7 @@ test:
 # Run acceptance tests
 .PHONY: testacc
 testacc:
-	code=$(shell TF_ACC=1 go test -p 1 -count=1 ./... -v $(TESTARGS) -timeout 120m > test.json; echo $$?)
-	echo "JSON:\r\t$(shell cat test.json)"
-	exit $(code)
+	TF_ACC=1 go test -p 1 -count=1 ./... -v $(TESTARGS) -timeout 120m
 
 .PHONY: testacc
 testacc-ci:

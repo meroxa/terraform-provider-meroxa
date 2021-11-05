@@ -74,7 +74,7 @@ func dataSourceEndpointRead(ctx context.Context, d *schema.ResourceData, m inter
 	}
 
 	_ = d.Set("id", e.Name)
-	_ = d.Set("protocol", e.Protocol)
+	_ = d.Set("protocol", string(e.Protocol))
 	_ = d.Set("stream", e.Stream)
 	_ = d.Set("ready", e.Ready)
 	_ = d.Set("host", e.Host)

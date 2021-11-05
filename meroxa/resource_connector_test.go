@@ -32,6 +32,7 @@ func TestAccMeroxaConnector_basic(t *testing.T) {
 	}
 	`, os.Getenv("MEROXA_POSTGRES_URL"))
 
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
@@ -149,7 +150,7 @@ func testAccCheckMeroxaConnectorDestroy(s *terraform.State) error {
 			return err
 		}
 
-		r, err := c.GetConnector(context.Background(), rID)
+		r, err := c.GetConnectorByNameOrID(context.Background(), fmt.Sprint(rID))
 		if err == nil && r != nil {
 			return fmt.Errorf("connector still exists")
 		}

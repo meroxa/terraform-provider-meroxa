@@ -179,7 +179,7 @@ func testAccCheckMeroxaResourceDestroy(s *terraform.State) error {
 			return err
 		}
 
-		r, err := c.GetResource(context.Background(), rID)
+		r, err := c.GetResourceByNameOrID(context.Background(), fmt.Sprint(rID))
 		if err == nil && r != nil {
 			return fmt.Errorf("resource still exists")
 		}
