@@ -32,7 +32,6 @@ func TestAccMeroxaConnector_basic(t *testing.T) {
 	}
 	`, os.Getenv("MEROXA_POSTGRES_URL"))
 
-
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
