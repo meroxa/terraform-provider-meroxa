@@ -44,9 +44,7 @@ testacc:
 
 .PHONY: testacc
 testacc-ci:
-	code=$(shell TF_ACC=1 go test -p 1 -count=1 -json ./... -v $(TESTARGS) -timeout 120m > test.json; echo $$?)
-	echo "JSON:\r\t$(shell cat test.json)"
-	exit $(code)
+	TF_ACC=1 go test -p 1 -count=1 -json ./... -v $(TESTARGS) -timeout 120m > test.json
 
 .PHONY: vet
 vet:
