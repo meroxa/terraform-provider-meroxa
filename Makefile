@@ -46,7 +46,6 @@ testacc:
 testacc-ci:
 	TF_ACC=1 go test -p 1 -count=1 -json ./... -v $(TESTARGS) -timeout 120m > test.json
 
-
 .PHONY: vet
 vet:
 	docker run --rm -v $(CURDIR):/meroxa -w /meroxa golangci/golangci-lint:latest golangci-lint run --timeout 5m -v

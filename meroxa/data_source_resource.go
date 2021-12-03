@@ -7,7 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 func dataSourceResource() *schema.Resource {
@@ -123,7 +123,7 @@ func dataSourceResource() *schema.Resource {
 }
 
 func dataSourceResourceRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	c := m.(*meroxa.Client)
+	c := m.(meroxa.Client)
 
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
@@ -131,7 +131,7 @@ func dataSourceResourceRead(ctx context.Context, d *schema.ResourceData, m inter
 	var err error
 
 	if v, ok := d.GetOk("name"); ok && v.(string) != "" {
-		r, err = c.GetResourceByName(ctx, v.(string))
+		r, err = c.GetResourceByNameOrID(ctx, v.(string))
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -139,10 +139,10 @@ func dataSourceResourceRead(ctx context.Context, d *schema.ResourceData, m inter
 
 	_ = d.Set("id", r.ID)
 	_ = d.Set("name", r.Name)
-	_ = d.Set("type", r.Type)
+	_ = d.Set("type", string(r.Type))
 	_ = d.Set("url", r.URL)
 	_ = d.Set("metadata", r.Metadata)
-	_ = d.Set("status", r.Status.State) //todo flatten
+	_ = d.Set("status", string(r.Status.State)) //todo flatten
 	_ = d.Set("created_at", r.CreatedAt.String())
 	_ = d.Set("updated_at", r.UpdatedAt.String())
 

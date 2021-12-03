@@ -7,7 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 func dataSourceConnector() *schema.Resource {
@@ -63,12 +63,6 @@ func dataSourceConnector() *schema.Resource {
 				Computed:    true,
 				Elem:        schema.TypeString,
 			},
-			"metadata": {
-				Type:        schema.TypeMap,
-				Description: "Connector metadata",
-				Computed:    true,
-				Elem:        schema.TypeString,
-			},
 			"pipeline_id": {
 				Type:        schema.TypeInt,
 				Description: "Connector's Pipeline ID",
@@ -100,25 +94,24 @@ func dataSourceConnectorRead(ctx context.Context, d *schema.ResourceData, m inte
 	var conn *meroxa.Connector
 	var err error
 
-	c := m.(*meroxa.Client)
+	c := m.(meroxa.Client)
 
 	if v, ok := d.GetOk("name"); ok && v.(string) != "" {
-		conn, err = c.GetConnectorByName(ctx, v.(string))
+		conn, err = c.GetConnectorByNameOrID(ctx, v.(string))
 		if err != nil {
 			return diag.FromErr(err)
 		}
 	}
 
 	_ = d.Set("id", strconv.Itoa(conn.ID))
-	_ = d.Set("type", conn.Type)
+	_ = d.Set("type", string(conn.Type))
 	_ = d.Set("name", conn.Name)
 	_ = d.Set("config", conn.Configuration)
-	_ = d.Set("metadata", conn.Metadata)
 	err = d.Set("streams", flattenStreams(conn))
 	if err != nil {
 		return diag.FromErr(fmt.Errorf("error setting streams: %s", err))
 	}
-	_ = d.Set("state", conn.State)
+	_ = d.Set("state", string(conn.State))
 	_ = d.Set("pipeline_id", conn.PipelineID)
 	_ = d.Set("pipeline_name", conn.PipelineName)
 

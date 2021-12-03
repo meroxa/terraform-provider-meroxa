@@ -6,7 +6,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 func resourcePipeline() *schema.Resource {
@@ -20,19 +20,11 @@ func resourcePipeline() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "Pipeline name",
 				Required:    true,
-				ForceNew:    true,
 			},
 			"state": {
 				Type:        schema.TypeString,
 				Description: "Pipeline state",
 				Computed:    true,
-			},
-			"metadata": {
-				Type:        schema.TypeMap,
-				Description: "Pipeline metadata",
-				Optional:    true,
-				Computed:    true,
-				Elem:        schema.TypeString,
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -46,16 +38,9 @@ func resourcePipelineCreate(ctx context.Context, d *schema.ResourceData, m inter
 	var diags diag.Diagnostics
 	var err error
 
-	c := m.(*meroxa.Client)
-	pipeline := &meroxa.Pipeline{
+	c := m.(meroxa.Client)
+	pipeline := &meroxa.CreatePipelineInput{
 		Name: d.Get("name").(string),
-	}
-
-	if v, ok := d.GetOk("metadata"); ok {
-		pipeline.Metadata = v.(map[string]interface{})
-	} else {
-		meta := make(map[string]interface{})
-		pipeline.Metadata = meta
 	}
 
 	p, err := c.CreatePipeline(ctx, pipeline)
@@ -73,7 +58,7 @@ func resourcePipelineRead(ctx context.Context, d *schema.ResourceData, m interfa
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	c := m.(*meroxa.Client)
+	c := m.(meroxa.Client)
 
 	name := d.Get("name").(string)
 
@@ -82,7 +67,6 @@ func resourcePipelineRead(ctx context.Context, d *schema.ResourceData, m interfa
 		return diag.FromErr(err)
 	}
 
-	_ = d.Set("metadata", p.Metadata)
 	_ = d.Set("state", p.State)
 
 	return diags
@@ -92,8 +76,8 @@ func resourcePipelineUpdate(ctx context.Context, d *schema.ResourceData, m inter
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	c := m.(*meroxa.Client)
-	input := meroxa.UpdatePipelineInput{
+	c := m.(meroxa.Client)
+	input := &meroxa.UpdatePipelineInput{
 		Name: d.Get("name").(string),
 	}
 
@@ -103,9 +87,6 @@ func resourcePipelineUpdate(ctx context.Context, d *schema.ResourceData, m inter
 		return diag.FromErr(err)
 	}
 
-	if d.HasChange("metadata") {
-		input.Metadata = d.Get("metadata").(map[string]interface{})
-	}
 	_, err = c.UpdatePipeline(ctx, pID, input)
 	if err != nil {
 		return diag.FromErr(err)
@@ -119,7 +100,7 @@ func resourcePipelineUpdate(ctx context.Context, d *schema.ResourceData, m inter
 func resourcePipelineDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
-	c := m.(*meroxa.Client)
+	c := m.(meroxa.Client)
 	dID := d.Id()
 	pID, err := strconv.Atoi(dID)
 	if err != nil {

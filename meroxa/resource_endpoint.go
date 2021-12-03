@@ -6,7 +6,7 @@ import (
 	"github.com/hashicorp/go-cty/cty"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 func resourceEndpoint() *schema.Resource {
@@ -76,11 +76,14 @@ func resourceEndpoint() *schema.Resource {
 }
 
 func resourceEndpointCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	c := m.(*meroxa.Client)
+	c := m.(meroxa.Client)
 	name := d.Get("name").(string)
-	protocol := d.Get("protocol").(string)
-	stream := d.Get("stream").(string)
-	err := c.CreateEndpoint(ctx, name, protocol, stream)
+	input := &meroxa.CreateEndpointInput{
+		Name:     name,
+		Protocol: meroxa.EndpointProtocol(d.Get("protocol").(string)),
+		Stream:   d.Get("stream").(string),
+	}
+	err := c.CreateEndpoint(ctx, input)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -94,7 +97,7 @@ func resourceEndpointRead(ctx context.Context, d *schema.ResourceData, m interfa
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	c := m.(*meroxa.Client)
+	c := m.(meroxa.Client)
 
 	name := d.Get("name").(string)
 
@@ -103,7 +106,7 @@ func resourceEndpointRead(ctx context.Context, d *schema.ResourceData, m interfa
 		return diag.FromErr(err)
 	}
 
-	_ = d.Set("protocol", e.Protocol)
+	_ = d.Set("protocol", string(e.Protocol))
 	_ = d.Set("stream", e.Stream)
 	_ = d.Set("ready", e.Ready)
 	_ = d.Set("host", e.Host)
@@ -116,7 +119,7 @@ func resourceEndpointRead(ctx context.Context, d *schema.ResourceData, m interfa
 func resourceEndpointDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
-	c := m.(*meroxa.Client)
+	c := m.(meroxa.Client)
 	eName := d.Id()
 
 	err := c.DeleteEndpoint(ctx, eName)

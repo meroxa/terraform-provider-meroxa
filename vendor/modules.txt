@@ -158,7 +158,6 @@ github.com/go-git/go-git/v5/utils/merkletrie/noder
 # github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e
 github.com/golang/groupcache/lru
 # github.com/golang/protobuf v1.5.2
-## explicit
 github.com/golang/protobuf/internal/gengogrpc
 github.com/golang/protobuf/proto
 github.com/golang/protobuf/protoc-gen-go
@@ -284,9 +283,9 @@ github.com/klauspost/compress/zstd/internal/xxhash
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.12
 github.com/mattn/go-isatty
-# github.com/meroxa/meroxa-go v0.0.0-20210903151302-d7ef8814cfca
+# github.com/meroxa/meroxa-go v0.0.0-20211105214618-48f894144533
 ## explicit
-github.com/meroxa/meroxa-go
+github.com/meroxa/meroxa-go/pkg/meroxa
 # github.com/mitchellh/cli v1.1.2
 github.com/mitchellh/cli
 # github.com/mitchellh/copystructure v1.2.0
@@ -376,8 +375,7 @@ golang.org/x/lint/golint
 # golang.org/x/mod v0.4.2
 golang.org/x/mod/module
 golang.org/x/mod/semver
-# golang.org/x/net v0.0.0-20210903162142-ad29c8ab022f
-## explicit
+# golang.org/x/net v0.0.0-20211101193420-4a448f8816b3
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
 golang.org/x/net/http/httpguts
@@ -440,7 +438,6 @@ google.golang.org/api/transport/cert
 google.golang.org/api/transport/http
 google.golang.org/api/transport/http/internal/propagation
 # google.golang.org/appengine v1.6.7
-## explicit
 google.golang.org/appengine
 google.golang.org/appengine/datastore
 google.golang.org/appengine/datastore/internal/cloudkey
@@ -506,7 +503,6 @@ google.golang.org/grpc/stats
 google.golang.org/grpc/status
 google.golang.org/grpc/tap
 # google.golang.org/protobuf v1.27.1
-## explicit
 google.golang.org/protobuf/cmd/protoc-gen-go/internal_gengo
 google.golang.org/protobuf/compiler/protogen
 google.golang.org/protobuf/encoding/prototext

@@ -1,0 +1,3 @@
+```release-note:enhancement
+Updating for latest meroxa-go interface; no longer exposing Connector and Pipeline metadata.
+```
