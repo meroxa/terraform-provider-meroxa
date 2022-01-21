@@ -296,12 +296,6 @@ func resourceConnectorConfig(d *schema.ResourceData) map[string]interface{} {
 	return config
 }
 
-// Thoughts:
-//   1. Can we DRY this up with some kind of shared util library?
-//      Seems better than keeping 2 validator functions & regex patterns in sync.
-//
-//   2. Is it possible to append multiple errors in diags and return once at the end?
-//      If we can display multiple errors, better than going through errors one by one.
 func validateConnectorName() schema.SchemaValidateDiagFunc {
 	return func(val interface{}, path cty.Path) diag.Diagnostics {
 		var diags diag.Diagnostics
