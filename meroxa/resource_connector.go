@@ -15,7 +15,6 @@ import (
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
-// TODO: DRY this up & move, doesn't quite belong here
 const (
 	connectorNameMin int = 3
 	connectorNameMax int = 64
