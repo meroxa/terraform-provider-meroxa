@@ -34,7 +34,7 @@ func resourceConnector() *schema.Resource {
 				Required:         true,
 				ForceNew:         true,
 				Description:      "Connector Name",
-				ValidateDiagFunc: validateConnectorName(), // todo add validation
+				ValidateDiagFunc: validateConnectorName(),
 			},
 			"input": {
 				Type:        schema.TypeString,

@@ -142,7 +142,7 @@ func TestAccMeroxaConnector_NameValidation(t *testing.T) {
 			resourceTest.Steps = []resource.TestStep{
 				{
 					Config:      testAccMeroxaConnectionBasic,
-					ExpectError: regexp.MustCompile(test.expectedErr),
+					ExpectError: regexp.MustCompile(fmt.Sprintf(".*%s.*", test.expectedErr)), // Search for error substring, Terraform wraps this error
 				},
 			}
 		} else {
