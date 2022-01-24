@@ -6,6 +6,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
@@ -139,10 +140,13 @@ func TestAccMeroxaConnector_NameValidation(t *testing.T) {
 		}
 
 		if len(test.expectedErr) > 0 {
+			// The terraform plugin wraps errors to the next line
+			// This regex will help search for the error sentence independent of line wraps / spacing.
+			expectedErrRegex := strings.Join(strings.Split(test.expectedErr, " "), "( |\n)*")
 			resourceTest.Steps = []resource.TestStep{
 				{
 					Config:      testAccMeroxaConnectionBasic,
-					ExpectError: regexp.MustCompile(fmt.Sprintf(".*%s.*", test.expectedErr)), // Search for error substring, Terraform wraps this error
+					ExpectError: regexp.MustCompile(expectedErrRegex),
 				},
 			}
 		} else {
