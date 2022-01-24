@@ -3,14 +3,24 @@ package meroxa
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
+	"github.com/hashicorp/go-cty/cty"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
+
+const (
+	connectorNameMin int = 3
+	connectorNameMax int = 64
+)
+
+var connectorNamePattern = regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]$`)
 
 func resourceConnector() *schema.Resource {
 	return &schema.Resource{
@@ -20,10 +30,11 @@ func resourceConnector() *schema.Resource {
 		DeleteContext: resourceConnectorDelete,
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:        schema.TypeString,
-				Required:    true,
-				ForceNew:    true,
-				Description: "Connector Name",
+				Type:             schema.TypeString,
+				Required:         true,
+				ForceNew:         true,
+				Description:      "Connector Name",
+				ValidateDiagFunc: validateConnectorName(),
 			},
 			"input": {
 				Type:        schema.TypeString,
@@ -282,4 +293,48 @@ func resourceConnectorConfig(d *schema.ResourceData) map[string]interface{} {
 	}
 
 	return config
+}
+
+func validateConnectorName() schema.SchemaValidateDiagFunc {
+	return func(val interface{}, path cty.Path) diag.Diagnostics {
+		var diags diag.Diagnostics
+		name := val.(string)
+
+		if len(name) > connectorNameMax {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Invalid connector name",
+				Detail:   fmt.Sprintf("connector name should not be longer than %d characters", connectorNameMax),
+			})
+			return diags
+		}
+
+		if len(name) < connectorNameMin {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Invalid connector name",
+				Detail:   fmt.Sprintf("connector name should be at least %d characters long", connectorNameMin),
+			})
+			return diags
+		}
+
+		if name != strings.ToLower(name) {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Invalid connector name",
+				Detail:   "connector name should only contain lowercase letters",
+			})
+			return diags
+		}
+
+		if !connectorNamePattern.MatchString(name) {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Invalid connector name",
+				Detail:   "connector name should start with a letter and contain only alphanumeric characters or dashes",
+			})
+		}
+
+		return diags
+	}
 }

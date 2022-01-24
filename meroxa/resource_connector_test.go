@@ -6,6 +6,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
@@ -75,6 +76,95 @@ func TestAccMeroxaConnector_WithoutPipeline(t *testing.T) {
 			},
 		},
 	})
+}
+
+func TestAccMeroxaConnector_NameValidation(t *testing.T) {
+	tests := []struct {
+		desc          string
+		connectorName string
+		expectedErr   string
+	}{
+		{
+			desc:          "valid name with numbers and dashes",
+			connectorName: "ab-123",
+		},
+		{
+			desc:          "name too long",
+			connectorName: "abcdefghijklmnopqrstuvwxyz1234567890-abcdefghijklmnopqrstuvwxyz1234567890",
+			expectedErr:   "connector name should not be longer than 64 characters",
+		},
+		{
+			desc:          "name too short",
+			connectorName: "ab",
+			expectedErr:   "connector name should be at least 3 characters long",
+		},
+		{
+			desc:          "name with uppercase letters",
+			connectorName: "abCDE",
+			expectedErr:   "connector name should only contain lowercase letters",
+		},
+		{
+			desc:          "name that starts with number",
+			connectorName: "1abc",
+			expectedErr:   "connector name should start with a letter and contain only alphanumeric characters or dashes",
+		},
+		{
+			desc:          "name that ends in a dash",
+			connectorName: "abc-",
+			expectedErr:   "connector name should start with a letter and contain only alphanumeric characters or dashes",
+		},
+	}
+
+	for _, test := range tests {
+		testAccMeroxaConnectionBasic := fmt.Sprintf(`
+		resource "meroxa_resource" "connector_test" {
+		  name = "connector-inline"
+		  type = "postgres"
+		  url = "%s"
+		}
+		resource "meroxa_pipeline" "connector_test" {
+		  name = "connector-test"
+		}
+		resource "meroxa_connector" "basic" {
+			name = "%s"
+			pipeline_id = meroxa_pipeline.connector_test.id
+			source_id = meroxa_resource.connector_test.id
+			input = "public"
+		}
+		`, os.Getenv("MEROXA_POSTGRES_URL"), test.connectorName)
+
+		resourceTest := resource.TestCase{
+			PreCheck:          func() { testAccPreCheck(t) },
+			ProviderFactories: testAccProviderFactories,
+			CheckDestroy:      testAccCheckMeroxaConnectorDestroy,
+		}
+
+		if len(test.expectedErr) > 0 {
+			// The terraform plugin wraps errors to the next line
+			// This regex will help search for the error sentence independent of line wraps / spacing.
+			expectedErrRegex := strings.Join(strings.Split(test.expectedErr, " "), "( |\n)*")
+			resourceTest.Steps = []resource.TestStep{
+				{
+					Config:      testAccMeroxaConnectionBasic,
+					ExpectError: regexp.MustCompile(expectedErrRegex),
+				},
+			}
+		} else {
+			resourceTest.Steps = []resource.TestStep{
+				{
+					Config: testAccMeroxaConnectionBasic,
+					Check: resource.ComposeTestCheckFunc(
+						testAccCheckMeroxaResourceExists("meroxa_connector.basic"),
+						resource.TestCheckResourceAttr("meroxa_connector.basic", "name", test.connectorName),
+						resource.TestCheckResourceAttr("meroxa_connector.basic", "type", "jdbc-source"),
+						resource.TestCheckResourceAttr("meroxa_connector.basic", "state", "running"),
+					),
+				},
+			}
+		}
+
+		resource.Test(t, resourceTest)
+	}
 }
 
 func TestAccMeroxaConnector_WithConfig(t *testing.T) {
