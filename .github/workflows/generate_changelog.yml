@@ -19,8 +19,8 @@ jobs:
             else
               MSG="Update CHANGELOG.md for #${{ github.event.pull_request.number }}"
             fi
-            git config --local user.email changelogbot@hashicorp.com
-            git config --local user.name changelogbot
+            git config --local user.email machine@meroxa.io
+            git config --local user.name meroxa-machine
             git add CHANGELOG.md
             git commit -m "$MSG"
             git push origin HEAD:main
