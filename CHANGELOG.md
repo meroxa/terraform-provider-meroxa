@@ -1,13 +1,3 @@
-## v1.5.0
-
-ENHANCEMENTS:
-
-* Updating for latest meroxa-go interface; no longer exposing Connector and Pipeline metadata. ([#26](https://github.com/meroxa/terraform-provider-meroxa/issues/26))
-
-BUG FIXES:
-
-* Add connector name validation ([#29](https://github.com/meroxa/terraform-provider-meroxa/issues/29))
-
 ## v1.4.0
 
 ENHANCEMENTS:
