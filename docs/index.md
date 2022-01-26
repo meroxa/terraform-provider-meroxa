@@ -19,6 +19,7 @@ meroxa config --json
 	"path": "/Users/$USER/Library/Application Support/meroxa/config.env",
 	"config": {
 		"access_token": $ACCESS_TOKEN,
+		"refresh_token": $REFRESH_TOKEN,
 		...
 	}
 }
@@ -32,9 +33,16 @@ meroxa config --json
 	"path": "~/meroxa/config.env ",
 	"config": {
 		"access_token": $ACCESS_TOKEN,
+		"refresh_token": $REFRESH_TOKEN,
 		...
 	}
 }
+```
+
+If you prefer to set env vars for `access_token` and `refresh_token`:
+```
+export MEROXA_ACCESS_TOKEN=$(meroxa config --json | jq -r .config.access_token)
+export MEROXA_REFRESH_TOKEN=$(meroxa config --json | jq -r .config.refresh_token)
 ```
 
 ## Example Usage
