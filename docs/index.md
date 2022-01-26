@@ -9,18 +9,32 @@ description: |-
 
 The Meroxa provider provides resources to interact with the Meroxa platform API.
 
-Get `access_token` and `refresh_token` by loggin into the Meroxa CLI.
+Get `access_token` by logging into the Meroxa CLI with `meroxa login` and running `meroxa config --json`. The output will contain `access_token` within the `config` key.
 
 Mac
 ```bash
-meroxa login
-$(awk '{print "export MEROXA_" $0}' /Users/$USER/Library/ApplicationSupport/meroxa/config.env | xargs)
+meroxa config --json
+
+{
+	"path": "/Users/$USER/Library/Application Support/meroxa/config.env",
+	"config": {
+		"access_token": $ACCESS_TOKEN,
+		...
+	}
+}
 ```
 
 Linux
 ```bash
-meroxa login
-$(awk '{print "export MEROXA_" $0}' ~/meroxa/config.env | xargs)
+meroxa config --json
+
+{
+	"path": "~/meroxa/config.env ",
+	"config": {
+		"access_token": $ACCESS_TOKEN,
+		...
+	}
+}
 ```
 
 ## Example Usage
