@@ -1,0 +1,3 @@
+```release-note:improvement
+Updated Terraform Registry docs regarding access tokens.
+```
