@@ -72,7 +72,7 @@ jobs:
 
       - name: Annotate tests
         if: always()
-        uses: guyarb/golang-test-annotations@v0.4.0
+        uses: guyarb/golang-test-annotations@v0.5.1
         with:
           test-results: ./provider/test.json
           package-name: meroxa
