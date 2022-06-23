@@ -61,7 +61,7 @@ func Provider(version string) func() *schema.Provider {
 					Type:     schema.TypeBool,
 					Optional: true,
 					DefaultFunc: func() (interface{}, error) {
-						v := os.Getenv("AUTH0_DEBUG")
+						v := os.Getenv("MEROXA_AUTH_DEBUG")
 						if v == "" {
 							return false, nil
 						}
