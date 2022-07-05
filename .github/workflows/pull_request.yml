@@ -17,17 +17,17 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
         with:
-          go-version: ^1.16
+          go-version: ^1.18
       - name: Build
         run: make build
   vet:
     name: Vet
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Vet
         run: make vet
   staging_acceptance:
@@ -35,12 +35,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout terraform provider
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: provider
-      - uses: actions/setup-go@v2
+      - uses: actions/setup-go@v3
         with:
-          go-version: ^1.16
+          go-version: ^1.18
       # Run acceptance tests
       - name: Run Terraform Provider Acceptance tests
         working-directory: ./provider
@@ -72,7 +72,7 @@ jobs:
 
       - name: Annotate tests
         if: always()
-        uses: guyarb/golang-test-annotations@v0.4.0
+        uses: guyarb/golang-test-annotations@v0.6.0
         with:
           test-results: ./provider/test.json
           package-name: meroxa
