@@ -136,7 +136,7 @@ func TestAccMeroxaResource_sshTunnel(t *testing.T) {
 	  		}
 		}`,
 		Config.PrivatePostgresURL,
-		bastionAddr,
+		withSSHURL(bastionAddr),
 		fmt.Sprintf("<<-EOT\n%s\nEOT\n", Config.BastionKey),
 	)
 	resource.Test(t, resource.TestCase{
