@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"flag"
+	"log"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
 
 	"terraform-provider-meroxa/meroxa"
@@ -36,7 +38,10 @@ func main() {
 		// TODO: update this string with the full name of your provider as used in your configs
 		opts.ProviderAddr = "registry.terraform.io/meroxa/meroxa"
 		opts.Debug = true
-		plugin.DebugServe(context.Background(), opts)
+		_, _, err := plugin.DebugServe(context.Background(), opts)
+		if err != nil {
+			log.Fatal(err.Error())
+		}
 		return
 	}
 
