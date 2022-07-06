@@ -136,7 +136,7 @@ func TestAccMeroxaResource_sshTunnel(t *testing.T) {
 	  		}
 		}`,
 		Config.PrivatePostgresURL,
-		bastionAddr,
+		withSSHURL(bastionAddr),
 		fmt.Sprintf("<<-EOT\n%s\nEOT\n", Config.BastionKey),
 	)
 	resource.Test(t, resource.TestCase{
@@ -152,7 +152,7 @@ func TestAccMeroxaResource_sshTunnel(t *testing.T) {
 					resource.TestCheckResourceAttr("meroxa_resource.with_tunnel", "type", "postgres"),
 					resource.TestCheckResourceAttr("meroxa_resource.with_tunnel", "url", privatePostgresURL),
 					resource.TestCheckResourceAttr("meroxa_resource.with_tunnel", "status", "ready"),
-					resource.TestCheckResourceAttr("meroxa_resource.with_tunnel", "ssh_tunnel.0.address", bastionAddr),
+					resource.TestCheckResourceAttr("meroxa_resource.with_tunnel", "ssh_tunnel.0.address", withSSHURL(bastionAddr)),
 					resource.TestCheckResourceAttr("meroxa_resource.with_tunnel", "ssh_tunnel.0.public_key", sshPubKey),
 				),
 			},
@@ -212,4 +212,8 @@ func URLWithoutCredentials(u string) (string, error) {
 
 	parsed.User = nil
 	return parsed.String(), nil
+}
+
+func withSSHURL(addr string) string {
+	return fmt.Sprintf("ssh://%s", addr)
 }
