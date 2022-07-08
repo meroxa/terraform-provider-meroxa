@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 const connectorsBasePath = "/v1/connectors"
@@ -31,28 +32,34 @@ const (
 type ConnectorType string
 
 const (
+	// ConnectorTypeSource should be changed these since they are associated to `Type` where in fact we're representing
+	// source or destination connectors as part of their metadata not this attribute.
+	// `Type` should be simply a string (`jdbc-source`, `s3-destination`)
+	// They're currently being used in the CLI.
 	ConnectorTypeSource      ConnectorType = "source"
 	ConnectorTypeDestination ConnectorType = "destination"
 )
 
 type Connector struct {
-	ID            int                    `json:"id"`
-	Type          ConnectorType          `json:"type"`
-	Name          string                 `json:"name"`
 	Configuration map[string]interface{} `json:"config"`
+	CreatedAt     time.Time              `json:"created_at"`
+	Environment   *EntityIdentifier      `json:"environment,omitempty"`
 	Metadata      map[string]interface{} `json:"metadata"`
+	Name          string                 `json:"name"`
+	PipelineName  string                 `json:"pipeline_name"`
+	ResourceName  string                 `json:"resource_name"`
 	Streams       map[string]interface{} `json:"streams"`
 	State         ConnectorState         `json:"state"`
 	Trace         string                 `json:"trace,omitempty"`
-	PipelineID    int                    `json:"pipeline_id"`
-	PipelineName  string                 `json:"pipeline_name"`
+	Type          ConnectorType          `json:"type"`
+	UpdatedAt     time.Time              `json:"updated_at"`
+	UUID          string                 `json:"uuid"`
 }
 
 type CreateConnectorInput struct {
 	Name          string                 `json:"name,omitempty"`
-	ResourceID    int                    `json:"resource_id"`
-	PipelineID    int                    `json:"pipeline_id,omitempty"`
-	PipelineName  string                 `json:"pipeline_name,omitempty"`
+	ResourceName  string                 `json:"resource_name"`
+	PipelineName  string                 `json:"pipeline_name"`
 	Configuration map[string]interface{} `json:"config,omitempty"`
 	Metadata      map[string]interface{} `json:"metadata,omitempty"`
 	Type          ConnectorType          `json:"connector_type,omitempty"`
@@ -146,8 +153,8 @@ func (c *client) UpdateConnector(ctx context.Context, nameOrID string, input *Up
 }
 
 // ListPipelineConnectors returns an array of Connectors (scoped to the calling user)
-func (c *client) ListPipelineConnectors(ctx context.Context, pipelineID int) ([]*Connector, error) {
-	path := fmt.Sprintf("/v1/pipelines/%d/connectors", pipelineID)
+func (c *client) ListPipelineConnectors(ctx context.Context, pipelineNameOrID string) ([]*Connector, error) {
+	path := fmt.Sprintf("%s/%s/connectors", pipelinesBasePath, pipelineNameOrID)
 
 	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil)
 	if err != nil {
@@ -227,4 +234,15 @@ func (c *client) DeleteConnector(ctx context.Context, nameOrID string) error {
 	}
 
 	return nil
+}
+
+func filterConnectorsPerType(list []*Connector, cType ConnectorType) []*Connector {
+	connectors := make([]*Connector, 0)
+	for _, connector := range list {
+		if connector.Metadata != nil &&
+			connector.Metadata["mx:connectorType"] == string(cType) {
+			connectors = append(connectors, connector)
+		}
+	}
+	return connectors
 }

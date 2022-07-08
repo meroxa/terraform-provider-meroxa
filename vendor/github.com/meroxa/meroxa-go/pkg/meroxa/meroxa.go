@@ -4,10 +4,13 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/volatiletech/null/v8"
 )
 
 const (
@@ -15,6 +18,27 @@ const (
 	jsonContentType = "application/json"
 	textContentType = "text/plain"
 )
+
+// EnvironmentIdentifier represents either value as a unique key for a Meroxa Environment
+type EnvironmentIdentifier struct {
+	UUID string `json:"uuid,omitempty"`
+	Name string `json:"name,omitempty"`
+}
+
+// EntityIdentifier represents one or both values for a Meroxa Entity
+type EntityIdentifier struct {
+	UUID null.String `json:"uuid,omitempty"`
+	Name null.String `json:"name,omitempty"`
+}
+
+func (e EntityIdentifier) GetNameOrUUID() (string, error) {
+	if e.Name.Valid {
+		return e.Name.String, nil
+	} else if e.UUID.Valid {
+		return e.UUID.String, nil
+	}
+	return "", fmt.Errorf("identifier has neither name or UUID")
+}
 
 // client represents the Meroxa API Client
 type client struct {
@@ -27,6 +51,16 @@ type client struct {
 
 // Client represents the interface to the Meroxa API
 type Client interface {
+	CreateApplication(ctx context.Context, input *CreateApplicationInput) (*Application, error)
+	DeleteApplication(ctx context.Context, name string) error
+	DeleteApplicationEntities(ctx context.Context, name string) (*http.Response, error)
+	GetApplication(ctx context.Context, name string) (*Application, error)
+	ListApplications(ctx context.Context) ([]*Application, error)
+
+	CreateBuild(ctx context.Context, input *CreateBuildInput) (*Build, error)
+	GetBuild(ctx context.Context, uuid string) (*Build, error)
+	GetBuildLogs(ctx context.Context, uuid string) (*http.Response, error)
+
 	CreateConnector(ctx context.Context, input *CreateConnectorInput) (*Connector, error)
 	DeleteConnector(ctx context.Context, nameOrID string) error
 	GetConnectorByNameOrID(ctx context.Context, nameOrID string) (*Connector, error)
@@ -34,6 +68,12 @@ type Client interface {
 	ListConnectors(ctx context.Context) ([]*Connector, error)
 	UpdateConnector(ctx context.Context, nameOrID string, input *UpdateConnectorInput) (*Connector, error)
 	UpdateConnectorStatus(ctx context.Context, nameOrID string, state Action) (*Connector, error)
+
+	CreateFunction(ctx context.Context, input *CreateFunctionInput) (*Function, error)
+	GetFunction(ctx context.Context, nameOrUUID string) (*Function, error)
+	GetFunctionLogs(ctx context.Context, nameOrUUID string) (*http.Response, error)
+	ListFunctions(ctx context.Context) ([]*Function, error)
+	DeleteFunction(ctx context.Context, nameOrUUID string) (*Function, error)
 
 	CreateEndpoint(ctx context.Context, input *CreateEndpointInput) error
 	DeleteEndpoint(ctx context.Context, name string) error
@@ -43,16 +83,18 @@ type Client interface {
 	CreateEnvironment(ctx context.Context, input *CreateEnvironmentInput) (*Environment, error)
 	DeleteEnvironment(ctx context.Context, nameOrUUID string) (*Environment, error)
 	GetEnvironment(ctx context.Context, nameOrUUID string) (*Environment, error)
+	UpdateEnvironment(ctx context.Context, nameOrUUID string, input *UpdateEnvironmentInput) (*Environment, error)
 	ListEnvironments(ctx context.Context) ([]*Environment, error)
+	PerformActionOnEnvironment(ctx context.Context, nameOrUUID string, input *RepairEnvironmentInput) (*Environment, error)
 
 	CreatePipeline(ctx context.Context, input *CreatePipelineInput) (*Pipeline, error)
-	DeletePipeline(ctx context.Context, id int) error
+	DeletePipeline(ctx context.Context, nameOrID string) error
 	GetPipeline(ctx context.Context, pipelineID int) (*Pipeline, error)
 	GetPipelineByName(ctx context.Context, name string) (*Pipeline, error)
 	ListPipelines(ctx context.Context) ([]*Pipeline, error)
-	ListPipelineConnectors(ctx context.Context, pipelineID int) ([]*Connector, error)
-	UpdatePipeline(ctx context.Context, pipelineID int, input *UpdatePipelineInput) (*Pipeline, error)
-	UpdatePipelineStatus(ctx context.Context, pipelineID int, action Action) (*Pipeline, error)
+	ListPipelineConnectors(ctx context.Context, pipelineNameOrID string) ([]*Connector, error)
+	UpdatePipeline(ctx context.Context, pipelineNameOrID string, input *UpdatePipelineInput) (*Pipeline, error)
+	UpdatePipelineStatus(ctx context.Context, pipelineNameOrID string, action Action) (*Pipeline, error)
 
 	CreateResource(ctx context.Context, input *CreateResourceInput) (*Resource, error)
 	DeleteResource(ctx context.Context, nameOrID string) error
@@ -63,6 +105,8 @@ type Client interface {
 	ValidateResource(ctx context.Context, nameOrID string) (*Resource, error)
 
 	ListResourceTypes(ctx context.Context) ([]string, error)
+
+	CreateSource(ctx context.Context) (*Source, error)
 
 	ListTransforms(ctx context.Context) ([]*Transform, error)
 
