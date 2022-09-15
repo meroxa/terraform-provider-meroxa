@@ -26,6 +26,7 @@ func init() {
 
 	// Always allocate a new provider instance each invocation, otherwise gRPC
 	// ProviderConfigure() can overwrite configuration during concurrent testing.
+	//nolint:unparam
 	testAccProviderFactories = map[string]func() (*schema.Provider, error){
 		"meroxa": func() (*schema.Provider, error) {
 			return Provider("testacc")(), nil
