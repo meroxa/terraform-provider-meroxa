@@ -68,7 +68,7 @@ jobs:
             --data scope=user \
             --data 'client_id='"$MEROXA_AUTH_CLIENT_ID"'' \
             --data client_secret=$MEROXA_AUTH_CLIENT_SECRET | jq -r .access_token)
-          make testacc
+          make testacc-ci
 
       - name: Annotate tests
         if: always()
